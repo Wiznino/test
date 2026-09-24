@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Food extends Model
+{   protected $table = 'foods';
+    protected $fillable = [
+        'name',
+        'description',
+        'price',
+        'image',
+        'available',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'available' => 'boolean',
+    ];
+}

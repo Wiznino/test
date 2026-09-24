@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <link rel="stylesheet" href="{{ asset('css/atu.css') }}">
+     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+     <meta name="apple-mobile-web-app-title" content="ATU Cafeteria">
     <title>Login - ATU Cafeteria</title>
 
     <style>
@@ -18,7 +22,7 @@
         }
 
         .header {
-            background: #8B0000;
+            background: #00158b;
             color: white;
             padding: 20px 50px;
         }
@@ -115,6 +119,45 @@
             text-decoration: none;
             font-weight: bold;
         }
+        body {
+    background: #EAF3FF !important;
+}
+
+h1,
+h2,
+h3 {
+    color: #0057B8 !important;
+}
+
+button,
+input[type="submit"] {
+    background: #0057B8 !important;
+    color: #FFFFFF !important;
+    border: none !important;
+}
+
+button:hover,
+input[type="submit"]:hover {
+    background: #003B7A !important;
+}
+
+input {
+    border: 2px solid #D1D5DB !important;
+}
+
+input:focus {
+    border-color: #0057B8 !important;
+    outline: none;
+}
+
+a {
+    color: #0057B8 !important;
+}
+
+a:hover {
+    color: #003B7A !important;
+}
+
     </style>
 </head>
 

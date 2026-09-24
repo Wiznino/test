@@ -7,6 +7,10 @@
     <title>Dashboard - ATU Cafeteria</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -14,82 +18,115 @@
         }
 
         nav {
-            background: #8B0000;
+            background: #7b001c;
             color: white;
-            padding: 20px 50px;
+            padding: 18px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        nav h2 {
+        nav h1 {
             margin: 0;
+            font-size: 24px;
+        }
+
+        .logout-button {
+            background: white;
+            color: #7b001c;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 900px;
             margin: 50px auto;
-            padding: 20px;
+            padding: 0 20px;
         }
 
-        .welcome {
+        .card {
             background: white;
-            padding: 35px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
-        .welcome h1 {
-            color: #8B0000;
+        .card h2 {
+            color: #7b001c;
+            margin-bottom: 15px;
         }
 
-        .button {
-            background: #8B0000;
+        .card p {
+            color: #555;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .menu-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 14px 30px;
+            background: #7b001c;
             color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 6px;
-            cursor: pointer;
+            text-decoration: none;
+            border-radius: 7px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .menu-button:hover {
+            background: #5d0015;
         }
     </style>
 </head>
 
 <body>
 
-    <nav>
-        <h2>ATU Cafeteria</h2>
+<nav>
 
-        <form method="POST" action="/logout">
-            @csrf
-            <button type="submit" class="button">
-                Logout
-            </button>
-        </form>
-    </nav>
+    <h1>ATU Cafeteria</h1>
 
-    <div class="container">
+    <form action="/logout" method="POST">
+        @csrf
 
-        <div class="welcome">
+        <button type="submit" class="logout-button">
+            Logout
+        </button>
+    </form>
 
-            <h1>
-                Welcome, {{ Auth::user()->name }}! 👋
-            </h1>
+</nav>
 
-            <p>
-                You are successfully logged into your ATU Cafeteria account.
-            </p>
+<div class="container">
 
-            <p>
-                Your email: {{ Auth::user()->email }}
-            </p>
+    <div class="card">
 
-            <p>
-                Your phone: {{ Auth::user()->phone }}
-            </p>
+        <h2>
+            Welcome, {{ Auth::user()->name }}! 👋
+        </h2>
 
-        </div>
+        <p>
+            You are successfully logged into your ATU Cafeteria account.
+        </p>
+
+        <p>
+            Your email: {{ Auth::user()->email }}
+        </p>
+
+        <p>
+            Your phone: {{ Auth::user()->phone }}
+        </p>
+
+        <a href="/menu" class="menu-button">
+            🍔 View Menu
+        </a>
 
     </div>
+
+</div>
 
 </body>
 </html>

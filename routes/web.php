@@ -42,7 +42,7 @@ Route::post('/register', function (Request $request) {
 
 Route::get('/login', function () {
     return view('login');
-});
+})->name('login');
 
 Route::post('/login', function (Request $request) {
 
@@ -74,4 +74,8 @@ Route::post('/logout', function (Request $request) {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
+})->middleware('auth');
+Route::get('/menu', function () {
+    $foods = \App\Models\Food::where('available', true)->get();
+    return view('menu', compact('foods'));
 })->middleware('auth');

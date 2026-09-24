@@ -1,0 +1,180 @@
+:root {
+    --atu-blue: #0057B8;
+    --atu-dark-blue: #003B7A;
+    --atu-yellow: #FFD700;
+    --atu-white: #FFFFFF;
+    --atu-light-blue: #EAF3FF;
+    --atu-text: #1F2937;
+}
+
+/* General page */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: var(--atu-light-blue);
+    color: var(--atu-text);
+}
+
+/* Main headings */
+h1,
+h2,
+h3 {
+    color: var(--atu-blue);
+}
+
+/* Navigation */
+.atu-nav {
+    background: var(--atu-blue);
+    color: var(--atu-white);
+}
+
+/* Main buttons */
+.atu-button {
+    display: inline-block;
+    background: var(--atu-blue);
+    color: var(--atu-white);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.atu-button:hover {
+    background: var(--atu-dark-blue);
+}
+
+/* Yellow button */
+.atu-button-yellow {
+    display: inline-block;
+    background: var(--atu-yellow);
+    color: var(--atu-dark-blue);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Cards */
+.atu-card {
+    background: var(--atu-white);
+    border: 2px solid var(--atu-blue);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Prices */
+.atu-price {
+    color: var(--atu-blue);
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Yellow highlight */
+.atu-highlight {
+    color: var(--atu-dark-blue);
+    background: var(--atu-yellow);
+    padding: 4px 8px;
+    border-radius: 5px;
+}
+
+/* Links */
+a {
+    color: var(--atu-blue);
+}
+
+a:hover {
+    color: var(--atu-dark-blue);
+}
+
+/* Form inputs */
+input,
+select,
+textarea {
+    border: 2px solid #D1D5DB;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--atu-blue);
+    box-shadow: 0 0 0 3px rgba(0, 87, 184, 0.15);
+}
+/* =========================================
+   ATU CAFETERIA COLOR OVERRIDES
+   Blue + Yellow + White
+   ========================================= */
+
+body {
+    background: #ffffff !important;
+    color: #1f2937 !important;
+}
+
+/* Navigation */
+nav,
+header {
+    background: #0057B8 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+}
+
+nav a,
+header a {
+    color: #ffffff !important;
+}
+
+/* Main headings */
+h1,
+h2,
+h3 {
+    color: #0057B8 !important;
+}
+
+/* Main buttons */
+button,
+.btn,
+a[href="/menu"] {
+    background: #0057B8 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    border-color: #0057B8 !important;
+}
+
+/* Button hover */
+button:hover,
+.btn:hover,
+a[href="/menu"]:hover {
+    background: #003B7A !important;
+    color: #ffffff !important;
+}
+
+/* Highlight / important areas */
+.atu-highlight {
+    background: #FFD700 !important;
+    color: #003B7A !important;
+}
+
+/* Cards */
+.atu-card,
+.card {
+    background: #ffffff !important;
+    border-color: #0057B8 !important;
+}
+
+/* Prices */
+.atu-price {
+    color: #0057B8 !important;
+}
+
+/* Yellow accents */
+.price,
+.highlight {
+    color: #003B7A !important;
+}

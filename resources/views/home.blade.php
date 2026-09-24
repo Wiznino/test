@@ -5,7 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>ATU Cafeteria</title>
-
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0057B8">
+    <link rel="stylesheet" href="{{ asset('css/atu.css') }}">
+     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+     <meta name="apple-mobile-web-app-capable" content="yes">
+     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+     <meta name="apple-mobile-web-app-title" content="ATU Cafeteria">
+    <script>
+        if ('serviceWorker' in navigator){
+            window.addEventListener('load', function (){
+                navigator.serviceWorker.register('/sw.js');
+            });
+        }
+        </script>
     <style>
         body {
             margin: 0;
@@ -115,7 +128,7 @@
             Skip the long cafeteria queue and pick up your food when it is ready.
         </p>
 
-        <a href="#menu" class="button">View Menu</a>
+        <a href="/menu" class="button">View Menu</a>
 
     </section>
 
