@@ -79,3 +79,54 @@ Route::get('/menu', function () {
     $foods = \App\Models\Food::where('available', true)->get();
     return view('menu', compact('foods'));
 })->middleware('auth');
+Route::post('/cart/add/{id}', function ($id) {
+    $food = \App\Models\Food::findOrFail($id);
+
+    $cart = session()->get('cart', []);
+
+    if (isset($cart[$id])) {
+        $cart[$id]['quantity']++;
+    } else {
+        $cart[$id] = [
+            'name' => $food->name,
+            'price' => $food->price,
+            'quantity' => 1,
+        ];
+    }
+
+    session()->put('cart', $cart);
+
+    return redirect('/menu')->with('success', $food->name . ' added to cart!');
+})->middleware('auth');
+Route::post('/cart/add/{id}', function ($id) {
+    $food = \App\Models\Food::findOrFail($id);
+
+    $cart = session()->get('cart', []);
+
+    if (isset($cart[$id])) {
+        $cart[$id]['quantity']++;
+    } else {
+        $cart[$id] = [
+            'name' => $food->name,
+            'price' => $food->price,
+            'quantity' => 1,
+        ];
+    }
+
+    session(['cart' => $cart]);
+
+    return redirect('/cart');
+})->middleware('auth');
+Route::get('/cart', function () {
+    $cart = session()->get('cart', []);
+    return view('cart', compact('cart'));
+})->middleware('auth');
+Route::get('/cart/remove/{id}', function ($id) {
+    $cart = session()->get('cart', []);
+    if (isset($cart[$id])) {
+        unset($cart[$id]);
+    }
+        session(['cart' => $cart]);
+    
+    return redirect('/cart');
+})->middleware('auth');

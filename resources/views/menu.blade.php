@@ -86,6 +86,29 @@
 </head>
 
 <body>
+    @php
+    $cart = session()->get('cart', []);
+    $cartCount = collect($cart)->sum('quantity');
+@endphp
+
+<div style="
+    display: flex;
+    justify-content: flex-end;
+    padding: 15px 20px;
+">
+    <a href="/cart" style="
+        background: #0057B8;
+        color: white;
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 16px;
+    ">
+        🛒 Cart ({{ $cartCount }})
+    </a>
+</div>
+
 
 <div class="header">
     <h1>🍔 ATU CAFETERIA</h1>
@@ -117,9 +140,26 @@
                         GH₵ {{ number_format($food->price, 2) }}
                     </div>
 
-                    <button class="button">
-                        Add to Cart
-                    </button>
+                    <form action="{{ url('/cart/add/' . $food->id) }}" method="POST">
+    @csrf
+
+    <button
+        type="submit"
+        style="
+            background: #0057B8 !important;
+            color: #FFFFFF !important;
+            border: none !important;
+            padding: 14px 24px !important;
+            border-radius: 8px !important;
+            font-size: 18px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+            width: 100% !important;
+        "
+    >
+        Add to Cart
+    </button>
+</form>
 
                 </div>
 
