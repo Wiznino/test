@@ -17,11 +17,13 @@ class Food extends Model
         'image',
         'available',
         'vendor_id',
+        'preparation_minutes',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'available' => 'boolean',
+        'preparation_minutes' => 'integer',
     ];
 
     public function vendor(): BelongsTo

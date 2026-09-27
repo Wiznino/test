@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'paystack' => [
+        'secret_key' => env('PAYSTACK_SECRET_KEY'),
+        'ca_bundle' => env('PAYSTACK_CA_BUNDLE') ? base_path(env('PAYSTACK_CA_BUNDLE')) : true,
+    ],
+
 ];

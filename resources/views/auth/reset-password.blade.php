@@ -1,0 +1,5 @@
+@extends('layouts.app')
+@section('title', 'Choose a new password')
+@section('content')
+<section class="auth-layout"><div class="auth-main"><div class="auth-card"><div class="eyebrow">ACCOUNT RECOVERY</div><h2>Choose a new password.</h2><form method="POST" action="{{ route('password.update') }}">@csrf<input type="hidden" name="token" value="{{ $token }}"><div class="field"><label for="email">Email address</label><input id="email" type="email" name="email" value="{{ old('email', $email) }}" autocomplete="email" required></div><div class="field"><label for="password">New password</label><input id="password" type="password" name="password" autocomplete="new-password" minlength="8" required></div><div class="field"><label for="password_confirmation">Confirm password</label><input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" required></div><button class="button button-primary button-wide" type="submit">Save new password</button></form></div></div></section>
+@endsection

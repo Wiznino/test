@@ -11,7 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class VendorController extends Controller
@@ -39,19 +38,20 @@ class VendorController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => ['required', 'string', 'max:30', Rule::unique('users', 'phone')->where('role', 'vendor')],
+            'email' => 'required|email|max:255|unique:users,email',
+            'phone' => ['nullable', 'string', 'max:30', Rule::unique('users', 'phone')->where('role', 'vendor')],
             'password' => 'required|string|min:8|confirmed',
         ]);
-        User::create([
+        $vendor = User::create([
             'name' => $data['name'],
-            'email' => 'vendor-'.Str::uuid().'@atu-eats.local',
-            'phone' => $data['phone'],
+            'email' => strtolower($data['email']),
+            'phone' => $data['phone'] ?? null,
             'password' => Hash::make($data['password']),
             'role' => 'vendor',
             'is_active' => true,
         ]);
 
-        return back()->with('success', 'Vendor account created. They can sign in with their phone number and temporary password.');
+        return back()->with('success', 'Vendor account created. They can sign in with their email address and temporary password.');
     }
 
     public function updateStatus(Request $request, User $vendor): RedirectResponse
@@ -68,6 +68,7 @@ class VendorController extends Controller
         return OrderItem::query()
             ->select('vendor_id', DB::raw('COUNT(DISTINCT order_id) as orders_count'), DB::raw('SUM(quantity) as meals_sold'), DB::raw('SUM(price * quantity) as revenue'))
             ->whereIn('vendor_id', $vendorIds)
+            ->whereHas('order', fn ($query) => $query->where('payment_status', 'paid'))
             ->groupBy('vendor_id')
             ->get()
             ->keyBy('vendor_id');

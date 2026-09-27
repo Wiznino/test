@@ -28,13 +28,14 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="field">
-                    <label for="identifier">Email address or vendor phone</label>
-                    <input id="identifier" type="text" name="identifier" value="{{ old('identifier') }}" placeholder="you@example.com or vendor phone" autocomplete="username" required autofocus>
+                    <label for="identifier">Email address</label>
+                    <input id="identifier" type="text" name="identifier" value="{{ old('identifier') }}" placeholder="you@example.com" autocomplete="email" required autofocus>
                 </div>
                 <div class="field">
                     <label for="password">Password</label>
                     <input id="password" type="password" name="password" placeholder="Your password" autocomplete="current-password" required>
                 </div>
+                <div class="auth-foot auth-forgot"><a href="{{ route('password.request') }}">Forgot your password?</a></div>
                 <label class="remember-line"><input type="checkbox" name="remember"> Keep me signed in</label>
                 <button class="button button-primary button-wide" type="submit">Sign in <span>↗</span></button>
             </form>

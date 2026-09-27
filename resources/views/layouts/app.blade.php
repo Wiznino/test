@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="theme-color" content="#003366">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Fresh campus favourites, ready when you are. Order from ATU Eats and skip the queue.">
     <title>@yield('title', 'ATU Eats') | Accra Technical University</title>
     <link rel="manifest" href="/manifest.json">
@@ -45,7 +46,7 @@
         @auth
             @if(Auth::user()->role === 'admin')<a class="{{ request()->routeIs('admin.*') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">Admin</a>
             @elseif(Auth::user()->role === 'vendor')<a class="{{ request()->routeIs('vendor.*') ? 'active' : '' }}" href="{{ route('vendor.dashboard') }}">Vendor workspace</a>
-            @else<a class="{{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}">My orders</a>@endif
+            @else<a class="{{ request()->routeIs('orders.*') ? 'active' : '' }}" href="{{ route('orders.index') }}">My orders</a><a class="{{ request()->routeIs('wallet.*') ? 'active' : '' }}" href="{{ route('wallet.show') }}">Wallet</a>@endif
         @endauth
     </nav>
     <div class="header-actions">
@@ -77,6 +78,7 @@
                     <a class="drawer-primary" href="{{ route('vendor.meals.index') }}"><span>Manage meals</span><b aria-hidden="true">›</b></a>
                 @else
                     <a class="drawer-primary" href="{{ route('orders.index') }}"><span>My orders</span><b aria-hidden="true">›</b></a>
+                    <a class="drawer-primary" href="{{ route('wallet.show') }}"><span>Wallet and top up</span><b aria-hidden="true">›</b></a>
                 @endif
             @else
                 <a class="drawer-primary" href="{{ route('login') }}"><span>Sign in to track orders</span><b aria-hidden="true">›</b></a>
@@ -87,7 +89,7 @@
             <details class="drawer-accordion"><summary>Pickup information<span aria-hidden="true">⌄</span></summary><p>Choose a pickup time at checkout. Your order page shows progress as the vendor prepares your meals.</p></details>
             <div class="drawer-section-label">YOUR ACCOUNT</div>
             @auth
-                <div class="drawer-account"><span class="drawer-account-mark">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span><div><strong>{{ Auth::user()->name }}</strong><small>{{ Auth::user()->role === 'vendor' ? Auth::user()->phone : Auth::user()->email }}</small></div></div>
+                <div class="drawer-account"><span class="drawer-account-mark">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span><div><strong>{{ Auth::user()->name }}</strong><small>{{ Auth::user()->role === 'vendor' && str_ends_with(Auth::user()->email, '@atu-eats.local') ? (Auth::user()->phone ?: Auth::user()->email) : Auth::user()->email }}</small></div></div>
                 <a class="drawer-secondary" href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : (Auth::user()->role === 'vendor' ? route('vendor.dashboard') : route('dashboard')) }}">Account dashboard <span aria-hidden="true">›</span></a>
                 <form class="drawer-signout" method="POST" action="{{ route('logout') }}">@csrf<button class="drawer-secondary" type="submit">Sign out <span aria-hidden="true">↗</span></button></form>
             @else

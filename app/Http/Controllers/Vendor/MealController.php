@@ -72,7 +72,7 @@ class MealController extends Controller
 
     private function validated(Request $request): array
     {
-        return $request->validate(['name' => 'required|string|max:255', 'description' => 'nullable|string|max:2000', 'price' => 'required|numeric|min:0.01|max:99999.99', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
+        return $request->validate(['name' => 'required|string|max:255', 'description' => 'nullable|string|max:2000', 'price' => 'required|numeric|min:0.01|max:99999.99', 'preparation_minutes' => 'required|integer|min:1|max:240', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048']);
     }
 
     private function authorizeFood(Food $food): void

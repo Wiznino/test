@@ -137,7 +137,10 @@ h3 {
     border-top: 3px solid var(--atu-gold);
 }
 
-.summary-total strong,
+.summary-total strong {
+    color: var(--atu-gold-ink);
+}
+
 .food-bottom strong {
     color: var(--atu-navy);
 }
