@@ -1,12 +1,12 @@
 {
-    "name": "ATU Cafeteria",
-    "short_name": "ATU Cafeteria",
+    "name": "ATU Eats - Campus Food Ordering",
+    "short_name": "ATU Eats",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",
     "background_color": "#ffffff",
-    "theme_color": "#0057B8",
-    "description": "ATU Cafeteria Food Ordering and Pickup System",
+    "theme_color": "#003366",
+    "description": "Fresh campus favourites, ready when you are.",
     "orientation": "portrait",
     "icons": [
         {

@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title', 'Manage meals')
+@section('content')
+<section class="manage-shell"><div class="manage-title page-manage-title"><div><span class="manage-kicker">YOUR MENU</span><h1>Manage <em>meals</em></h1></div><a class="manage-button" href="{{ route('vendor.meals.create') }}">＋ Add a meal</a></div>
+<div class="meal-manage-grid">@forelse($foods as $food)<article class="meal-manage-card">@if($food->image_url)<img src="{{ $food->image_url }}" alt="{{ $food->name }}">@else<div class="meal-image-placeholder">ATU EATS</div>@endif<div class="meal-manage-info"><div><small class="manage-status {{ $food->available ? 'status-ready' : 'status-received' }}">{{ $food->available ? 'Available' : 'Unavailable' }}</small><h2>{{ $food->name }}</h2><p>GH&#8373; {{ number_format($food->price, 2) }}</p></div><div class="meal-manage-actions"><a class="manage-small-button" href="{{ route('vendor.meals.edit', $food) }}">Edit</a><form method="POST" action="{{ route('vendor.meals.destroy', $food) }}" onsubmit="return confirm('Remove this meal from the menu?')">@csrf @method('DELETE')<button class="manage-danger" type="submit">Remove</button></form></div></div></article>@empty<div class="manage-panel"><h2>Your menu starts here</h2><p>Add your first meal with a clear photo and price.</p></div>@endforelse</div>{{ $foods->links() }}</section>
+@endsection

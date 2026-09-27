@@ -1,109 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.app')
 
-    <title>Cart - ATU Cafeteria</title>
+@section('title', 'Your bag')
 
-    <link rel="stylesheet" href="{{ asset('css/atu.css') }}">
-</head>
-
-<body>
-
-    <div style="max-width: 900px; margin: 0 auto; padding: 30px 20px;">
-
-        <h1 style="text-align: center;">
-            🛒 Your Cart
-        </h1>
-
-        @if (count($cart) > 0)
-
-            @php
-                $total = 0;
-            @endphp
-
-            @foreach ($cart as $id => $item)
-
-                @php
-                    $subtotal = $item['price'] * $item['quantity'];
-                    $total += $subtotal;
-                @endphp
-
-                <div class="atu-card" style="margin-bottom: 20px; padding: 20px;">
-
-                    <h2>
-                        {{ $item['name'] }}
-                    </h2>
-
-                    <p>
-                        Price: GH₵ {{ number_format($item['price'], 2) }}
-                    </p>
-
-                    <p>
-                        Quantity: {{ $item['quantity'] }}
-                    </p>
-
-                    <p class="atu-price">
-                        Subtotal:
-                        GH₵ {{ number_format($subtotal, 2) }}
-                    </p>
-                    <form action="{{ url('/cart/remove/' . $id) }}" method="POST">
-    @csrf
-
-    <button
-        type="submit"
-        style="
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-        "
-    >
-        🗑️ Remove
-    </button>
-</form>
-
-
-                </div>
-
-            @endforeach
-
-            <div class="atu-card" style="padding: 20px; text-align: center;">
-
-                <h2>
-                    Total:
-                    GH₵ {{ number_format($total, 2) }}
-                </h2>
-
-                <a href="/menu"
-                   class="atu-button"
-                   style="display: inline-block; text-decoration: none; margin-top: 10px;">
-                    Continue Shopping
-                </a>
-
-            </div>
-
-        @else
-
-            <div class="atu-card" style="padding: 30px; text-align: center;">
-
-                <h2>Your cart is empty</h2>
-
-                <a href="/menu"
-                   class="atu-button"
-                   style="display: inline-block; text-decoration: none;">
-                    Browse Menu
-                </a>
-
-            </div>
-
-        @endif
-
+@section('content')
+@php($total = collect($cart)->sum(fn ($item) => (float) $item['price'] * $item['quantity']))
+<section class="page-shell">
+    <div class="page-kicker"><a href="{{ route('menu') }}">Back to menu</a><span>YOUR ORDER</span></div>
+    <div class="page-title-row">
+        <div><div class="eyebrow">A GOOD CHOICE</div><h1>Your <em>bag.</em></h1></div>
+        <span class="count-pill">{{ collect($cart)->sum('quantity') }} {{ Str::plural('item', collect($cart)->sum('quantity')) }}</span>
     </div>
 
-</body>
-</html>
+    @if (count($cart))
+        <div class="cart-layout">
+            <div class="cart-items">
+                @foreach ($cart as $id => $item)
+                    <article class="cart-item">
+                        <div class="cart-thumb"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=75" alt=""></div>
+                        <div class="cart-item-copy">
+                            <span class="eyebrow">FRESHLY PREPARED</span>
+                            <h2>{{ $item['name'] }}</h2>
+                            <span class="muted">GH&#8373; {{ number_format($item['price'], 2) }} each</span>
+                            <div class="cart-controls">
+                                <form action="{{ route('cart.update', $id) }}" method="POST" class="quantity-form">
+                                    @csrf
+                                    @method('PATCH')
+                                    <label class="sr-only" for="qty-{{ $id }}">Quantity for {{ $item['name'] }}</label>
+                                    <input id="qty-{{ $id }}" name="quantity" type="number" min="1" max="20" value="{{ $item['quantity'] }}">
+                                    <button type="submit">Update</button>
+                                </form>
+                                <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="remove-button" type="submit">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                        <strong class="line-price">GH&#8373; {{ number_format((float) $item['price'] * $item['quantity'], 2) }}</strong>
+                    </article>
+                @endforeach
+                <a class="text-link continue-link" href="{{ route('menu') }}">Add another meal</a>
+            </div>
+
+            <aside class="summary-card">
+                <div class="eyebrow">YOUR TOTAL</div>
+                <h2>Order summary</h2>
+                <div class="summary-line"><span>Subtotal</span><strong>GH&#8373; {{ number_format($total, 2) }}</strong></div>
+                <div class="summary-line"><span>Pickup</span><strong>Free</strong></div>
+                <div class="summary-total"><span>Total</span><strong>GH&#8373; {{ number_format($total, 2) }}</strong></div>
+                <a class="button button-primary button-wide" href="{{ route('checkout') }}">Continue to pickup</a>
+                <p class="summary-note">Freshly prepared when you order.</p>
+            </aside>
+        </div>
+    @else
+        <div class="empty-cart">
+            <span class="empty-bag">+</span>
+            <h2>Your bag is taking a break.</h2>
+            <p>There is plenty of good food waiting for you.</p>
+            <a class="button button-primary" href="{{ route('menu') }}">Explore the menu</a>
+        </div>
+    @endif
+</section>
+@endsection
