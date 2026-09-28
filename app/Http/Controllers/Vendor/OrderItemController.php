@@ -15,7 +15,7 @@ class OrderItemController extends Controller
 {
     public function index(): View
     {
-        $items = Auth::user()->vendorOrderItems()->whereHas('order', fn ($query) => $query->where('payment_status', 'paid'))->with('order.user')->latest()->paginate(20);
+        $items = Auth::user()->vendorOrderItems()->with('order.user')->latest()->paginate(20);
 
         return view('vendor.orders.index', compact('items'));
     }

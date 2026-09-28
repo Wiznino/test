@@ -126,7 +126,7 @@ Route::post('/cart/add/{food}', function (Food $food) {
     abort_unless($food->available, 404);
     $cart = session('cart', []);
     $id = (string) $food->id;
-    $cart[$id] = ['name' => $food->name, 'price' => (float) $food->price, 'quantity' => ($cart[$id]['quantity'] ?? 0) + 1];
+    $cart[$id] = ['name' => $food->name, 'price' => (float) $food->price, 'image' => $food->image_url, 'quantity' => ($cart[$id]['quantity'] ?? 0) + 1];
     session(['cart' => $cart]);
 
     return back()->with('success', $food->name.' added to your bag.');

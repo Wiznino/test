@@ -37,7 +37,7 @@ class DashboardController extends Controller
             'orders' => (clone $paidItems)->distinct('order_id')->count('order_id'),
             'sales' => (clone $paidItems)->whereIn('status', ['ready', 'completed'])->selectRaw('SUM(price * quantity) as total')->value('total') ?? 0,
         ];
-        $recentItems = $paidItems->with('order.user')->latest()->take(8)->get();
+        $recentItems = $vendor->vendorOrderItems()->with('order.user')->latest()->take(8)->get();
 
         return view('vendor.dashboard', compact('stats', 'recentItems'));
     }

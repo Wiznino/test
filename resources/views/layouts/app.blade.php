@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{ asset('css/atu-colors.css') }}">
     <link rel="stylesheet" href="{{ asset('css/atu-splash.css') }}">
     <link rel="stylesheet" href="{{ asset('css/atu-management.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/atu-orders.css') }}">
     <link rel="stylesheet" href="{{ asset('css/atu-drawer.css') }}">
     <script>
         try {

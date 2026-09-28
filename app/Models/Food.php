@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 
 class Food extends Model
 {
@@ -37,6 +36,6 @@ class Food extends Model
             return null;
         }
 
-        return str_starts_with($this->image, 'http') ? $this->image : Storage::disk('public')->url($this->image);
+        return str_starts_with($this->image, 'http') ? $this->image : '/storage/'.ltrim($this->image, '/');
     }
 }

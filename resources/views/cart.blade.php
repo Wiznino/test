@@ -16,7 +16,7 @@
             <div class="cart-items">
                 @foreach ($cart as $id => $item)
                     <article class="cart-item">
-                        <div class="cart-thumb"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=75" alt=""></div>
+                        <div class="cart-thumb"><img src="{{ $item['image'] ?? '/images/meal-placeholder.svg' }}" alt="{{ $item['name'] }}" onerror="this.onerror=null;this.src='/images/meal-placeholder.svg'"></div>
                         <div class="cart-item-copy">
                             <span class="eyebrow">FRESHLY PREPARED</span>
                             <h2>{{ $item['name'] }}</h2>

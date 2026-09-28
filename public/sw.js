@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atu-eats-v11';
+const CACHE_NAME = 'atu-eats-v12';
 
 const FILES_TO_CACHE = [
     '/',
@@ -7,9 +7,11 @@ const FILES_TO_CACHE = [
     '/css/atu-colors.css',
     '/css/atu-splash.css',
     '/css/atu-management.css',
+    '/css/atu-orders.css',
     '/css/atu-drawer.css',
     '/icons/icon-192.png',
     '/images/atu-splash.jpg',
+    '/images/meal-placeholder.svg',
 ];
 
 self.addEventListener('install', event => {

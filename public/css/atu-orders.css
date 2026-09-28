@@ -1,0 +1,6 @@
+.payment-pill{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;background:#fff1d9;color:#8b5a00;font-size:.72rem;font-weight:800;white-space:nowrap}
+.payment-paid{background:#e7f7ed;color:#217447}
+.payment-pending,.status-payment-pending{background:#fff1d9;color:#8b5a00}
+.payment-method-label{display:block;margin-top:4px;color:#627286;font-size:.72rem}
+.checkout-feedback{margin:6px 0 0 48px;color:#536274;font-size:.85rem}
+.checkout-submit:disabled{cursor:wait;opacity:.75}
