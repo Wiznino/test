@@ -2,7 +2,7 @@
 @section('title', 'Manage promotions')
 @section('content')
 <section class="manage-shell">
-    <div class="manage-hero"><div><span class="manage-kicker">CUSTOMER MESSAGES</span><h1>Promotions &amp; <em>offers</em></h1><p>Post campus offers to the home page, menu, and customer dashboard.</p></div></div>
+    <div class="manage-hero"><div><span class="manage-kicker">CUSTOMER MESSAGES</span><h1 class="promotion-page-title">Promotions &amp; offers</h1><p>Post campus offers to the home page, menu, and customer dashboard.</p></div></div>
     <div class="promotion-admin-layout">
         <section class="manage-panel"><div class="manage-title"><div><span class="manage-kicker">CREATE A CAMPAIGN</span><h2>New promotion</h2></div></div>
             <form class="manage-form" method="POST" action="{{ route('admin.promotions.store') }}" enctype="multipart/form-data">@csrf

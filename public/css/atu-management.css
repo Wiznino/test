@@ -50,5 +50,8 @@
 .promotion-dashboard-link{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:17px 20px;border:1px solid #f1dda5;border-left:5px solid var(--atu-gold);border-radius:15px;background:#fff9e9}
 .promotion-dashboard-link>div{display:grid;gap:5px}
 .promotion-dashboard-link>div strong{color:var(--atu-navy)}
+.promotion-page-title{color:var(--atu-gold)!important}
+.admin-overview-title{color:var(--atu-gold)!important}
+.promotion-admin-layout .manage-title h2,.promotion-admin-heading h3{color:#805800}
 @media(max-width:850px){.promotion-admin-layout{grid-template-columns:1fr}}
 @media(max-width:560px){.promotion-strip{width:calc(100% - 24px);padding:15px;margin-top:20px}.promotion-card>img{width:30%;min-width:88px}.promotion-copy{padding:11px}.promotion-date-fields{grid-template-columns:1fr}.promotion-dashboard-link{align-items:flex-start;flex-direction:column}}
