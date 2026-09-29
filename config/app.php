@@ -54,6 +54,11 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'support' => [
+        'email' => env('SUPPORT_EMAIL'),
+        'phone' => env('SUPPORT_PHONE'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
@@ -65,7 +70,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'Africa/Accra'),
 
     /*
     |--------------------------------------------------------------------------

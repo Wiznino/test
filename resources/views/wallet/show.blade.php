@@ -4,7 +4,7 @@
 <section class="page-shell wallet-shell">
     <div class="page-kicker"><a href="{{ route('dashboard') }}">← Your account</a><span>ATU EATS WALLET</span></div>
     <div class="wallet-hero">
-        <div><span class="eyebrow">AVAILABLE BALANCE</span><h1>GHS {{ number_format((float) Auth::user()->wallet_balance, 2) }}</h1><p>Add money to your wallet, then use your balance to pay for cafeteria orders.</p></div>
+        <div><span class="eyebrow">AVAILABLE BALANCE</span><h1><x-money :amount="(float) Auth::user()->wallet_balance" /></h1><p>Add money to your wallet, then use your balance to pay for cafeteria orders.</p></div>
         <span class="wallet-mark" aria-hidden="true">₵</span>
     </div>
     <div class="wallet-content-grid">
@@ -25,7 +25,7 @@
                 <article class="wallet-transaction">
                     <span class="wallet-transaction-icon {{ $transaction->type === 'credit' ? 'is-credit' : 'is-debit' }}" aria-hidden="true">{{ $transaction->type === 'credit' ? '+' : '−' }}</span>
                     <div class="wallet-transaction-copy"><strong>{{ $transaction->description ?? ($transaction->type === 'credit' ? 'Wallet top up' : 'Wallet payment') }}</strong><small>{{ $transaction->created_at->format('M j, Y · g:i A') }}</small><small>Ref: {{ $transaction->reference }}</small></div>
-                    <div class="wallet-transaction-amount"><strong class="{{ $transaction->type === 'credit' ? 'is-credit' : 'is-debit' }}">{{ $transaction->type === 'credit' ? '+' : '−' }} GHS {{ number_format((float) $transaction->amount, 2) }}</strong><small>{{ ucfirst($transaction->status) }}</small>
+                    <div class="wallet-transaction-amount"><strong class="{{ $transaction->type === 'credit' ? 'is-credit' : 'is-debit' }}">{{ $transaction->type === 'credit' ? '+' : '−' }} <x-money :amount="(float) $transaction->amount" /></strong><small>{{ ucfirst($transaction->status) }}</small>
                         @if($transaction->type === 'credit' && $transaction->status === 'pending')<form method="POST" action="{{ route('wallet.topups.retry', $transaction) }}">@csrf<button class="wallet-retry-link" type="submit">Retry payment</button></form>@endif
                     </div>
                 </article>

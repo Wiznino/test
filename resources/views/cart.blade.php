@@ -20,7 +20,7 @@
                         <div class="cart-item-copy">
                             <span class="eyebrow">FRESHLY PREPARED</span>
                             <h2>{{ $item['name'] }}</h2>
-                            <span class="muted">GH&#8373; {{ number_format($item['price'], 2) }} each</span>
+                            <span class="muted"><x-money :amount="$item['price']" /> each</span>
                             <div class="cart-controls">
                                 <form action="{{ route('cart.update', $id) }}" method="POST" class="quantity-form">
                                     @csrf
@@ -36,7 +36,7 @@
                                 </form>
                             </div>
                         </div>
-                        <strong class="line-price">GH&#8373; {{ number_format((float) $item['price'] * $item['quantity'], 2) }}</strong>
+                        <strong class="line-price"><x-money :amount="(float) $item['price'] * $item['quantity']" /></strong>
                     </article>
                 @endforeach
                 <a class="text-link continue-link" href="{{ route('menu') }}">Add another meal</a>
@@ -45,9 +45,9 @@
             <aside class="summary-card">
                 <div class="eyebrow">YOUR TOTAL</div>
                 <h2>Order summary</h2>
-                <div class="summary-line"><span>Subtotal</span><strong>GH&#8373; {{ number_format($total, 2) }}</strong></div>
+                <div class="summary-line"><span>Subtotal</span><strong><x-money :amount="$total" /></strong></div>
                 <div class="summary-line"><span>Pickup</span><strong>Free</strong></div>
-                <div class="summary-total"><span>Total</span><strong>GH&#8373; {{ number_format($total, 2) }}</strong></div>
+                <div class="summary-total"><span>Total</span><strong><x-money :amount="$total" /></strong></div>
                 <a class="button button-primary button-wide" href="{{ route('checkout') }}">Continue to pickup</a>
                 <p class="summary-note">Freshly prepared when you order.</p>
             </aside>

@@ -10,3 +10,45 @@
 .vendor-hours-panel{margin:1.25rem 0}.vendor-hours-panel form>p{color:#536274;font-size:.85rem}.manage-hours-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1rem 0}.manage-hours-fields label{display:grid;gap:.4rem;font-weight:700}.manage-hours-fields input{padding:.75rem;border:1px solid #c9d4e2;border-radius:10px;font:inherit}@media(max-width:640px){.manage-hours-fields{grid-template-columns:1fr}}
 
 .wallet-hero{display:flex;justify-content:space-between;align-items:center;padding:clamp(1.5rem,4vw,3rem);border-radius:24px;background:linear-gradient(120deg,#003366,#0755a0);color:#fff;margin:1.5rem 0 2rem}.wallet-hero h1{font-size:clamp(2rem,6vw,3.5rem);margin:.35rem 0;color:#ffcc00}.wallet-hero p{max-width:36rem;color:#e8f1fb}.wallet-mark{display:grid;place-items:center;width:6rem;height:6rem;border-radius:50%;background:#ffcc00;color:#003366;font-size:3rem;font-weight:900}.wallet-content-grid{display:grid;grid-template-columns:minmax(17rem,.8fr) minmax(0,1.4fr);gap:2rem}.wallet-topup-card h2{margin:.6rem 0}.wallet-topup-form{display:grid;gap:.7rem;margin:1.2rem 0}.wallet-amount-input{display:flex;align-items:center;gap:.7rem;padding:.5rem .8rem;border:1px solid #cad5e2;border-radius:12px}.wallet-amount-input span{font-weight:800;color:#003366}.wallet-amount-input input{width:100%;border:0;padding:.5rem;font:inherit;outline:none}.wallet-secure-note,.wallet-transaction small{color:#627286}.wallet-transaction{display:grid;grid-template-columns:auto 1fr auto;gap:1rem;align-items:center;padding:1rem 0;border-bottom:1px solid #e2e8ef}.wallet-transaction-icon{display:grid;place-items:center;width:2.5rem;height:2.5rem;border-radius:50%;font-size:1.3rem;font-weight:900;background:#fff2c2;color:#003366}.wallet-transaction-icon.is-debit{background:#edf1f5;color:#465465}.wallet-transaction-copy,.wallet-transaction-amount{display:grid;gap:.25rem}.wallet-transaction-copy small{overflow-wrap:anywhere}.wallet-transaction-amount{text-align:right}.wallet-transaction-amount .is-credit,.wallet-transaction-copy .is-credit{color:#176a42}.wallet-transaction-amount .is-debit{color:#003366}.wallet-retry-link,.wallet-topup-inline{border:0;background:none;color:#0755a0;text-decoration:underline;font:inherit;font-size:.85rem;cursor:pointer}.wallet-dashboard-card{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.4rem;margin:1.25rem 0;background:#fff;border:1px solid #d9e3ed;border-left:5px solid #ffcc00;border-radius:16px}.wallet-dashboard-card>div{display:grid;gap:.25rem}.wallet-dashboard-card strong{font-size:1.6rem;color:#805800}.wallet-dashboard-card small{color:#627286}.wallet-payment-choices{display:grid;gap:.75rem;margin:1.2rem 0}.wallet-payment-choices h2{font-size:1.05rem}.wallet-payment-option{display:flex;gap:.8rem;align-items:center;border:1px solid #d9e3ed;border-radius:12px;padding:.9rem}.wallet-payment-option span{display:grid;gap:.2rem}.wallet-payment-option small{color:#627286}.wallet-payment-option input{accent-color:#003366}.wallet-payment-option input:disabled+span{opacity:.55}@media(max-width:760px){.wallet-content-grid{grid-template-columns:1fr}.wallet-mark{width:4.2rem;height:4.2rem;font-size:2rem}}@media(max-width:520px){.wallet-transaction{grid-template-columns:auto 1fr}.wallet-transaction-amount{grid-column:2;text-align:left}.wallet-dashboard-card{align-items:flex-start;flex-direction:column}}
+/* Keep admin order totals readable beside customer and pickup details. */
+.admin-record-list{overflow-x:auto}
+.admin-order-heading,.admin-order-list-row{grid-template-columns:minmax(5rem,.55fr) minmax(10rem,1.1fr) minmax(11rem,1.15fr) minmax(6.5rem,.7fr) minmax(8rem,.85fr)}
+.admin-order-list-row>strong{justify-self:end;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media(min-width:651px) and (max-width:900px){.admin-order-heading,.admin-order-list-row{min-width:780px}}.admin-order-list-row>.admin-order-total{display:flex;flex-direction:column;align-items:flex-end;gap:.18rem;min-width:0;padding:.5rem .65rem;border-radius:10px;background:#fff4c2;color:#07366b;line-height:1.2;white-space:nowrap}
+.admin-order-total small{color:#805800;font-size:.56rem;font-weight:850;letter-spacing:.08em}
+.admin-order-total span{font-size:.9rem;font-weight:900}
+
+.site-support{display:grid;gap:.25rem;font-size:.75rem}
+.site-support strong{color:var(--atu-gold)}
+.site-support a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+
+.promotion-strip{width:min(1160px,calc(100% - 40px));margin:28px auto 8px;padding:22px;border:1px solid #f1cf71;border-radius:20px;background:linear-gradient(115deg,#fff8e4,#fff 70%)}
+.promotion-strip-heading{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}
+.promotion-strip-heading h2{margin:5px 0 0;color:var(--atu-navy);font:800 1.5rem Manrope,sans-serif}
+.promotion-strip-heading h2 em{color:#a86c00;font-style:normal}
+.promotion-strip-heading>span{color:var(--atu-muted);font-size:.75rem;font-weight:750}
+.promotion-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.promotion-card{display:flex;min-height:144px;overflow:hidden;border:1px solid #f1dda5;border-radius:15px;background:#fff;box-shadow:0 7px 22px #07366b0a}
+.promotion-card>img{width:34%;min-width:105px;object-fit:cover;background:#07366b}
+.promotion-copy{display:grid;align-content:center;justify-items:start;gap:5px;padding:14px}
+.promotion-tag{color:#805800;font-size:.62rem;font-weight:900;letter-spacing:.12em}
+.promotion-copy h3{margin:0;color:var(--atu-navy);font:800 1.05rem Manrope,sans-serif}
+.promotion-copy p{margin:0;color:var(--atu-ink);font-size:.82rem;line-height:1.45}
+.promotion-expiry{color:var(--atu-muted);font-size:.7rem;font-weight:700}
+.promotion-copy a{margin-top:3px;color:#0755a0;font-size:.78rem;font-weight:850;text-decoration:none}
+.promotion-admin-layout{display:grid;grid-template-columns:minmax(270px,.8fr) minmax(0,1.5fr);gap:18px;margin-top:18px;align-items:start}
+.promotion-date-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.promotion-date-fields input{min-width:0}
+.promotion-admin-card{padding:18px 0;border-bottom:1px solid var(--atu-line)}
+.promotion-admin-card:last-of-type{border-bottom:0}
+.promotion-admin-heading{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+.promotion-admin-heading>img{width:80px;height:68px;border-radius:10px;object-fit:cover;background:#07366b}
+.promotion-admin-heading h3{margin:7px 0 3px;color:var(--atu-navy);font:800 1rem Manrope,sans-serif}
+.promotion-admin-heading small{color:var(--atu-muted);font-size:.7rem}
+.promotion-edit-form{padding:15px;border-radius:13px;background:#f7faff}
+.promotion-admin-card>form:last-child{margin-top:10px}
+.promotion-dashboard-link{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:17px 20px;border:1px solid #f1dda5;border-left:5px solid var(--atu-gold);border-radius:15px;background:#fff9e9}
+.promotion-dashboard-link>div{display:grid;gap:5px}
+.promotion-dashboard-link>div strong{color:var(--atu-navy)}
+@media(max-width:850px){.promotion-admin-layout{grid-template-columns:1fr}}
+@media(max-width:560px){.promotion-strip{width:calc(100% - 24px);padding:15px;margin-top:20px}.promotion-card>img{width:30%;min-width:88px}.promotion-copy{padding:11px}.promotion-date-fields{grid-template-columns:1fr}.promotion-dashboard-link{align-items:flex-start;flex-direction:column}}

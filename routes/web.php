@@ -4,6 +4,7 @@ use App\Events\OrderStatusUpdated;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaystackPaymentController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\WalletController;
 use App\Models\Food;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Promotion;
 use App\Models\User;
 use App\Notifications\OrderUpdateNotification;
 use App\Services\PaystackService;
@@ -29,16 +31,18 @@ use Illuminate\Validation\ValidationException;
 Route::get('/', function () {
     $foods = Food::where('available', true)->with('vendor')->get()
         ->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders())->take(3);
+    $promotions = Promotion::currentlyVisible()->latest()->get();
 
-    return view('home', compact('foods'));
+    return view('home', compact('foods', 'promotions'));
 })->name('home');
 
 Route::get('/menu', function (Request $request) {
     $foods = Food::where('available', true)->with('vendor')
         ->when($request->filled('q'), fn ($query) => $query->where(fn ($q) => $q->where('name', 'like', '%'.$request->q.'%')->orWhere('description', 'like', '%'.$request->q.'%')))
         ->get()->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders());
+    $promotions = Promotion::currentlyVisible()->latest()->get();
 
-    return view('menu', compact('foods'));
+    return view('menu', compact('foods', 'promotions'));
 })->name('menu');
 
 Route::middleware('guest')->group(function () {
@@ -118,8 +122,9 @@ Route::get('/dashboard', function () {
         return redirect()->route('vendor.dashboard');
     }
     $orders = Auth::user()->orders()->latest()->take(3)->get();
+    $promotions = Promotion::currentlyVisible()->latest()->get();
 
-    return view('dashboard', compact('orders'));
+    return view('dashboard', compact('orders', 'promotions'));
 })->middleware('auth')->name('dashboard');
 
 Route::post('/cart/add/{food}', function (Food $food) {
@@ -282,6 +287,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::patch('/vendors/{vendor}/status', [VendorController::class, 'updateStatus'])->name('vendors.status');
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index');
+    Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store');
+    Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');
+    Route::delete('/promotions/{promotion}', [PromotionController::class, 'destroy'])->name('promotions.destroy');
 });
 
 Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'role:vendor'])->group(function () {
@@ -291,6 +300,7 @@ Route::prefix('vendor')->name('vendor.')->middleware(['auth', 'role:vendor'])->g
     Route::get('/meals/create', [MealController::class, 'create'])->name('meals.create');
     Route::post('/meals', [MealController::class, 'store'])->name('meals.store');
     Route::get('/meals/{food}/edit', [MealController::class, 'edit'])->name('meals.edit');
+    Route::patch('/meals/{food}/availability', [MealController::class, 'updateAvailability'])->name('meals.availability');
     Route::put('/meals/{food}', [MealController::class, 'update'])->name('meals.update');
     Route::delete('/meals/{food}', [MealController::class, 'destroy'])->name('meals.destroy');
     Route::get('/orders', [VendorOrderItemController::class, 'index'])->name('orders.index');

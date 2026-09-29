@@ -74,6 +74,7 @@
                     <a class="drawer-primary" href="{{ route('admin.customers.index') }}"><span>Customers</span><b aria-hidden="true">›</b></a>
                     <a class="drawer-primary" href="{{ route('admin.vendors.index') }}"><span>Vendors</span><b aria-hidden="true">›</b></a>
                     <a class="drawer-primary" href="{{ route('admin.orders.index') }}"><span>Orders</span><b aria-hidden="true">›</b></a>
+                    <a class="drawer-primary" href="{{ route('admin.promotions.index') }}"><span>Promotions</span><b aria-hidden="true">›</b></a>
                 @elseif(Auth::user()->role === 'vendor')
                     <a class="drawer-primary" href="{{ route('vendor.orders.index') }}"><span>Incoming orders</span><b aria-hidden="true">›</b></a>
                     <a class="drawer-primary" href="{{ route('vendor.meals.index') }}"><span>Manage meals</span><b aria-hidden="true">›</b></a>
@@ -114,6 +115,7 @@
     <a class="bottom-nav-item {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}" href="{{ route('admin.customers.index') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M17 4a4 4 0 0 1 0 8m1 3a6 6 0 0 1 4 6"/></svg><span>Customers</span></a>
     <a class="bottom-nav-item {{ request()->routeIs('admin.vendors.*') ? 'active' : '' }}" href="{{ route('admin.vendors.index') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 20h18M5 20V9l7-5 7 5v11M9 20v-6h6v6"/></svg><span>Vendors</span></a>
     <a class="bottom-nav-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}" href="{{ route('admin.orders.index') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10a2 2 0 0 1 2 2v16H5V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg><span>Orders</span></a>
+    <a class="bottom-nav-item {{ request()->routeIs('admin.promotions.*') ? 'active' : '' }}" href="{{ route('admin.promotions.index') }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg><span>Offers</span></a>
 </nav>
 @elseif(Auth::check() && Auth::user()->role === 'vendor')
 <nav class="bottom-nav" aria-label="Quick navigation">
@@ -146,7 +148,7 @@
     </a>
 </nav>
 @endif
-<footer class="site-footer"><a class="brand brand-light" href="{{ route('home') }}"><img class="brand-mark brand-crest" src="{{ asset('images/atu-splash.jpg') }}" alt="Accra Technical University crest"><span class="brand-copy">ATU <b>EATS</b><small>GOOD FOOD. ZERO QUEUE.</small></span></a><p>Good food for busy campus days.</p><span>© {{ date('Y') }} Accra Technical University</span></footer>
+<footer class="site-footer"><a class="brand brand-light" href="{{ route('home') }}"><img class="brand-mark brand-crest" src="{{ asset('images/atu-splash.jpg') }}" alt="Accra Technical University crest"><span class="brand-copy">ATU <b>EATS</b><small>GOOD FOOD. ZERO QUEUE.</small></span></a><p>Good food for busy campus days.</p>@if(config('app.support.email') || config('app.support.phone'))<div class="site-support"><strong>Need help?</strong>@if(config('app.support.email'))<a href="mailto:{{ config('app.support.email') }}">{{ config('app.support.email') }}</a>@endif @if(config('app.support.phone'))<a href="tel:{{ config('app.support.phone') }}">Call {{ config('app.support.phone') }}</a>@endif</div>@endif<span>© {{ date('Y') }} Accra Technical University</span></footer>
 <script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));</script>
 <script>
     if (document.documentElement.classList.contains('atu-splash-active')) {

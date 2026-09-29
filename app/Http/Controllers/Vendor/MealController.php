@@ -59,6 +59,15 @@ class MealController extends Controller
         return redirect()->route('vendor.meals.index')->with('success', 'Meal updated.');
     }
 
+    public function updateAvailability(Request $request, Food $food): RedirectResponse
+    {
+        $this->authorizeFood($food);
+        $data = $request->validate(['available' => ['required', 'boolean']]);
+        $food->update($data);
+
+        return back()->with('success', $data['available'] ? 'Meal is now available to customers.' : 'Meal is now unavailable to customers.');
+    }
+
     public function destroy(Food $food): RedirectResponse
     {
         $this->authorizeFood($food);
