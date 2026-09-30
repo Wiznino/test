@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\VendorController;
+use App\Http\Controllers\Customer\FoodFavoriteController;
+use App\Http\Controllers\Customer\FoodReviewController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaystackPaymentController;
 use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
@@ -19,6 +21,8 @@ use App\Models\Promotion;
 use App\Models\User;
 use App\Notifications\OrderUpdateNotification;
 use App\Services\PaystackService;
+use App\Services\PickupSlotService;
+use Carbon\CarbonImmutable;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,20 +33,45 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 Route::get('/', function () {
-    $foods = Food::where('available', true)->with('vendor')->get()
-        ->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders())->take(3);
+    $availableFoods = Food::where('available', true)->with('vendor')
+        ->withCount('reviews')
+        ->withAvg('reviews as portion_rating_average', 'portion_rating')
+        ->withAvg('reviews as value_rating_average', 'value_rating')
+        ->withAvg('reviews as accuracy_rating_average', 'accuracy_rating')
+        ->get()
+        ->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders());
+    $atuFavorites = $availableFoods
+        ->filter(fn (Food $food) => $food->reviews_count > 0)
+        ->sortByDesc(fn (Food $food) => collect([
+            $food->portion_rating_average,
+            $food->value_rating_average,
+            $food->accuracy_rating_average,
+        ])->filter(fn ($rating) => $rating !== null)->avg())
+        ->take(3)
+        ->values();
+    $foods = $availableFoods->take(3);
     $promotions = Promotion::currentlyVisible()->latest()->get();
+    $favoriteFoodIds = Auth::check() && Auth::user()->role === 'customer'
+        ? Auth::user()->favoriteFoods()->pluck('foods.id')->all()
+        : [];
 
-    return view('home', compact('foods', 'promotions'));
+    return view('home', compact('atuFavorites', 'foods', 'promotions', 'favoriteFoodIds'));
 })->name('home');
 
 Route::get('/menu', function (Request $request) {
     $foods = Food::where('available', true)->with('vendor')
         ->when($request->filled('q'), fn ($query) => $query->where(fn ($q) => $q->where('name', 'like', '%'.$request->q.'%')->orWhere('description', 'like', '%'.$request->q.'%')))
+        ->withCount('reviews')
+        ->withAvg('reviews as portion_rating_average', 'portion_rating')
+        ->withAvg('reviews as value_rating_average', 'value_rating')
+        ->withAvg('reviews as accuracy_rating_average', 'accuracy_rating')
         ->get()->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders());
     $promotions = Promotion::currentlyVisible()->latest()->get();
+    $favoriteFoodIds = Auth::check() && Auth::user()->role === 'customer'
+        ? Auth::user()->favoriteFoods()->pluck('foods.id')->all()
+        : [];
 
-    return view('menu', compact('foods', 'promotions'));
+    return view('menu', compact('foods', 'promotions', 'favoriteFoodIds'));
 })->name('menu');
 
 Route::middleware('guest')->group(function () {
@@ -163,17 +192,32 @@ Route::delete('/cart/{id}', function (string $id) {
 })->name('cart.remove');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/checkout', function () {
+    Route::middleware('role:customer')->group(function () {
+        Route::get('/favorites', [FoodFavoriteController::class, 'index'])->name('favorites.index');
+        Route::post('/favorites/{food}', [FoodFavoriteController::class, 'store'])->name('favorites.store');
+        Route::delete('/favorites/{food}', [FoodFavoriteController::class, 'destroy'])->name('favorites.destroy');
+    });
+
+    Route::get('/checkout', function (PickupSlotService $pickupSlotService) {
         $cart = session('cart', []);
         if (empty($cart)) {
             return redirect()->route('cart');
         }
-        $minimumPickup = now()->addMinutes(Food::whereIn('id', array_keys($cart))->max('preparation_minutes') ?? 15);
+        $foods = Food::whereIn('id', array_keys($cart))->where('available', true)->with('vendor')->get();
+        if ($foods->count() !== count($cart)) {
+            return redirect()->route('cart')->with('error', 'A meal in your bag is no longer available. Please review your bag.');
+        }
+        foreach ($foods as $food) {
+            if ($food->vendor && ! $food->vendor->isAcceptingOrders()) {
+                return redirect()->route('cart')->with('error', $food->vendor->name.' is not accepting orders right now.');
+            }
+        }
+        $pickupSlots = $pickupSlotService->availableSlots($foods);
 
-        return view('checkout', compact('minimumPickup'));
+        return view('checkout', compact('pickupSlots'));
     })->name('checkout');
 
-    Route::post('/checkout', function (Request $request, PaystackService $paystack) {
+    Route::post('/checkout', function (Request $request, PaystackService $paystack, PickupSlotService $pickupSlotService) {
         $cart = session('cart', []);
         if (empty($cart)) {
             return redirect()->route('menu')->with('error', 'Add a meal before checking out.');
@@ -187,17 +231,30 @@ Route::middleware('auth')->group(function () {
                 return redirect()->route('cart')->with('error', $food->vendor->name.' is not accepting orders right now.');
             }
         }
-        $minimumPickup = now()->addMinutes($foods->max('preparation_minutes') ?? 15);
         $data = $request->validate([
-            'pickup_time' => ['required', 'date', 'after:'.$minimumPickup->format('Y-m-d H:i:s')],
+            'pickup_time' => ['required', 'date_format:Y-m-d\\TH:i'],
             'notes' => ['nullable', 'string', 'max:500'],
             'payment_method' => ['required', 'in:paystack,wallet'],
         ]);
+        $requestedPickup = CarbonImmutable::createFromFormat('Y-m-d\\TH:i', $data['pickup_time'], config('app.timezone'));
         if ($data['payment_method'] === 'paystack' && ! config('services.paystack.secret_key')) {
             return back()->withInput()->with('error', 'Online payments are not configured yet. Please contact the cafeteria.');
         }
-        [$order, $paidByWallet] = DB::transaction(function () use ($cart, $foods, $data) {
+        [$order, $paidByWallet] = DB::transaction(function () use ($cart, $foods, $data, $requestedPickup, $pickupSlotService) {
             $customer = User::query()->lockForUpdate()->findOrFail(Auth::id());
+            $vendorIds = $foods->pluck('vendor_id')->filter()->unique()->sort()->values();
+            $vendors = User::query()->whereIn('id', $vendorIds)->orderBy('id')->lockForUpdate()->get()->keyBy('id');
+            $foods->each(function (Food $food) use ($vendors): void {
+                if ($food->vendor_id) {
+                    $food->setRelation('vendor', $vendors->get($food->vendor_id));
+                }
+            });
+            if ($vendors->contains(fn (User $vendor): bool => ! $vendor->isAcceptingOrders())) {
+                throw ValidationException::withMessages(['pickup_time' => 'A cafeteria in your basket has paused orders. Please return to your bag.']);
+            }
+            if (! $pickupSlotService->isAvailable($foods, $requestedPickup)) {
+                throw ValidationException::withMessages(['pickup_time' => 'That pickup time has just filled up or is no longer available. Please choose another slot.']);
+            }
             $totalPesewas = collect($cart)->sum(fn ($item, $id) => (int) round((float) $foods[$id]->price * 100) * $item['quantity']);
             $total = $totalPesewas / 100;
             $paidByWallet = $data['payment_method'] === 'wallet';
@@ -257,10 +314,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/orders/{order}', function (Order $order) {
         abort_unless($order->user_id === Auth::id(), 403);
-        $order->load('items');
+        $order->load('items.review');
 
         return view('orders.show', compact('order'));
     })->name('orders.show');
+
+    Route::post('/orders/items/{orderItem}/reviews', [FoodReviewController::class, 'store'])
+        ->middleware('role:customer')
+        ->name('orders.items.reviews.store');
 
     Route::get('/orders/{order}/tracking', [OrderTrackingController::class, 'show'])->name('orders.tracking');
     Route::get('/payments/paystack/callback', [PaystackPaymentController::class, 'callback'])->name('payments.paystack.callback');

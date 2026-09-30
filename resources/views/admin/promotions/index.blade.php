@@ -9,7 +9,6 @@
                 <label>Promotion title<input name="title" value="{{ old('title') }}" maxlength="120" required></label>
                 <label>Details<textarea name="description" rows="4" maxlength="1000" required>{{ old('description') }}</textarea></label>
                 <label>Banner image <span class="optional">JPG, PNG or WebP, up to 5 MB</span><input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
-                <label>Offer link <span class="optional">Optional</span><input type="url" name="link_url" value="{{ old('link_url') }}" placeholder="https://..." maxlength="2048"></label>
                 <div class="promotion-date-fields"><label>Starts <span class="optional">Optional</span><input type="datetime-local" name="starts_at" value="{{ old('starts_at') }}"></label><label>Ends <span class="optional">Optional</span><input type="datetime-local" name="ends_at" value="{{ old('ends_at') }}"></label></div>
                 <input type="hidden" name="is_active" value="0"><label class="manage-checkbox"><input type="checkbox" name="is_active" value="1" @checked(old('is_active', '1') === '1')> Publish when saved</label>
                 <button class="manage-button" type="submit">Publish promotion</button>
@@ -21,7 +20,7 @@
                     <div class="promotion-admin-heading">@if($promotion->image_url)<img src="{{ $promotion->image_url }}" alt="">@endif<div><span class="manage-status {{ $promotion->is_active ? 'status-ready' : 'status-received' }}">{{ $promotion->is_active ? 'Published' : 'Hidden' }}</span><h3>{{ $promotion->title }}</h3><small>{{ $promotion->starts_at?->format('M j, Y g:i A') ?? 'No start date' }} — {{ $promotion->ends_at?->format('M j, Y g:i A') ?? 'No end date' }}</small></div></div>
                     <form class="manage-form promotion-edit-form" method="POST" action="{{ route('admin.promotions.update', $promotion) }}" enctype="multipart/form-data">@csrf @method('PUT')
                         <label>Title<input name="title" value="{{ $promotion->title }}" maxlength="120" required></label><label>Details<textarea name="description" rows="3" maxlength="1000" required>{{ $promotion->description }}</textarea></label>
-                        <label>Replace banner <span class="optional">Leave empty to keep current image</span><input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label><label>Offer link<input type="url" name="link_url" value="{{ $promotion->link_url }}" placeholder="https://..." maxlength="2048"></label>
+                        <label>Replace banner <span class="optional">Leave empty to keep current image</span><input type="file" name="image" accept="image/jpeg,image/png,image/webp"></label>
                         <div class="promotion-date-fields"><label>Starts<input type="datetime-local" name="starts_at" value="{{ $promotion->starts_at?->format('Y-m-d\TH:i') }}"></label><label>Ends<input type="datetime-local" name="ends_at" value="{{ $promotion->ends_at?->format('Y-m-d\TH:i') }}"></label></div>
                         <input type="hidden" name="is_active" value="0"><label class="manage-checkbox"><input type="checkbox" name="is_active" value="1" @checked($promotion->is_active)> Publish to customers</label><button class="manage-button" type="submit">Save changes</button>
                     </form>

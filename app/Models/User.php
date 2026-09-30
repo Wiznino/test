@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'role', 'is_active', 'accepting_orders', 'opening_time', 'closing_time'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role', 'is_active', 'accepting_orders', 'opening_time', 'closing_time', 'max_orders_per_pickup_slot'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -25,6 +27,11 @@ class User extends Authenticatable
     public function foods(): HasMany
     {
         return $this->hasMany(Food::class, 'vendor_id');
+    }
+
+    public function favoriteFoods(): BelongsToMany
+    {
+        return $this->belongsToMany(Food::class, 'food_favorites')->withTimestamps();
     }
 
     public function vendorOrderItems(): HasMany
@@ -50,25 +57,27 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'accepting_orders' => 'boolean',
             'wallet_balance' => 'decimal:2',
+            'max_orders_per_pickup_slot' => 'integer',
         ];
     }
 
     public function isAcceptingOrders(): bool
     {
-        if (! $this->accepting_orders) {
-            return false;
-        }
+        return $this->accepting_orders && $this->isOpenAt(now());
+    }
 
+    public function isOpenAt(CarbonInterface $dateTime): bool
+    {
         if (! $this->opening_time || ! $this->closing_time) {
             return true;
         }
 
-        $now = now()->format('H:i');
+        $time = $dateTime->format('H:i');
         $openingTime = substr((string) $this->opening_time, 0, 5);
         $closingTime = substr((string) $this->closing_time, 0, 5);
 
         return $openingTime <= $closingTime
-            ? $now >= $openingTime && $now <= $closingTime
-            : $now >= $openingTime || $now <= $closingTime;
+            ? $time >= $openingTime && $time <= $closingTime
+            : $time >= $openingTime || $time <= $closingTime;
     }
 }

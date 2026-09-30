@@ -16,12 +16,14 @@ class DashboardController extends Controller
             'accepting_orders' => ['required', 'boolean'],
             'opening_time' => ['nullable', 'date_format:H:i', 'required_with:closing_time'],
             'closing_time' => ['nullable', 'date_format:H:i', 'required_with:opening_time'],
+            'max_orders_per_pickup_slot' => ['required', 'integer', 'min:1', 'max:50'],
         ]);
 
         Auth::user()->update([
             'accepting_orders' => $request->boolean('accepting_orders'),
             'opening_time' => $data['opening_time'] ?? null,
             'closing_time' => $data['closing_time'] ?? null,
+            'max_orders_per_pickup_slot' => $data['max_orders_per_pickup_slot'],
         ]);
 
         return back()->with('success', 'Your order availability has been updated.');

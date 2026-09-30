@@ -17,7 +17,6 @@ class StorePromotionRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:120'],
             'description' => ['required', 'string', 'max:1000'],
-            'link_url' => ['nullable', Rule::when($this->filled('link_url'), ['url:http,https']), 'max:2048'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', Rule::when($this->filled('starts_at'), ['after:starts_at'])],

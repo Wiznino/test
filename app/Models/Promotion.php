@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Promotion extends Model
 {
-    protected $fillable = ['title', 'description', 'image', 'link_url', 'starts_at', 'ends_at', 'is_active'];
+    protected $fillable = ['title', 'description', 'image', 'starts_at', 'ends_at', 'is_active'];
 
     protected function casts(): array
     {

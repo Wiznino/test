@@ -1,16 +1,30 @@
 @if($promotions->isNotEmpty())
-<section class="promotion-strip" aria-label="Campus promotions">
-    <div class="promotion-strip-heading"><div><span class="eyebrow">JUST FOR THE ATU COMMUNITY</span><h2>Fresh <em>offers.</em></h2></div><span>{{ $promotions->count() }} {{ Str::plural('offer', $promotions->count()) }}</span></div>
-    <div class="promotion-grid">
-        @foreach($promotions as $promotion)
-            <article class="promotion-card">
-                @if($promotion->image_url)<img src="{{ $promotion->image_url }}" alt="{{ $promotion->title }}" loading="lazy">@endif
-                <div class="promotion-copy"><span class="promotion-tag">ATU EATS OFFER</span><h3>{{ $promotion->title }}</h3><p>{{ $promotion->description }}</p>
-                    @if($promotion->ends_at)<small class="promotion-expiry">Offer ends {{ $promotion->ends_at->timezone(config('app.timezone'))->format('M j, g:i A') }}</small>@endif
-                    @if($promotion->link_url)<a href="{{ $promotion->link_url }}" target="_blank" rel="noopener noreferrer">View offer <span aria-hidden="true">↗</span></a>@endif
-                </div>
-            </article>
-        @endforeach
-    </div>
-</section>
+    <section class="promotion-strip" aria-label="Campus promotions">
+        <div class="promotion-strip-label">
+            <span aria-hidden="true">&#9733;</span>
+            <strong>ATU EATS</strong>
+            <small>OFFERS</small>
+        </div>
+
+        <div class="promotion-ticker-window" aria-label="Current offers">
+            <div class="promotion-ticker-track" style="--ticker-duration: {{ max(18, $promotions->count() * 8) }}s">
+                @foreach([false, true] as $isDuplicate)
+                    <div class="promotion-ticker-group" @if($isDuplicate) aria-hidden="true" inert @endif>
+                        @foreach($promotions as $promotion)
+                            <article class="promotion-ticker-item">
+                                <span class="promotion-ticker-spark" aria-hidden="true">&#9733;</span>
+                                <div class="promotion-copy">
+                                    <h2>{{ $promotion->title }}</h2>
+                                    <p>{{ $promotion->description }}</p>
+                                    @if($promotion->ends_at)
+                                        <small class="promotion-expiry">Ends {{ $promotion->ends_at->timezone(config('app.timezone'))->format('M j, g:i A') }}</small>
+                                    @endif
+                                </div>
+                            </article>
+                        @endforeach
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </section>
 @endif

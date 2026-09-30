@@ -80,6 +80,7 @@
                     <a class="drawer-primary" href="{{ route('vendor.meals.index') }}"><span>Manage meals</span><b aria-hidden="true">›</b></a>
                 @else
                     <a class="drawer-primary" href="{{ route('orders.index') }}"><span>My orders</span><b aria-hidden="true">›</b></a>
+                    <a class="drawer-primary" href="{{ route('favorites.index') }}"><span>Saved meals</span><b aria-hidden="true">&#8250;</b></a>
                     <a class="drawer-primary" href="{{ route('wallet.show') }}"><span>Wallet and top up</span><b aria-hidden="true">›</b></a>
                 @endif
             @else
