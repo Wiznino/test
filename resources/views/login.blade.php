@@ -25,7 +25,7 @@
                 <div class="inline-error">{{ $errors->first() }}</div>
             @endif
 
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login', [], false) }}">
                 @csrf
                 <div class="field">
                     <label for="identifier">Email address</label>
