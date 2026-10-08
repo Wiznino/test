@@ -118,6 +118,7 @@
 .promotion-unavailable{margin:0;color:#8a3c30;font-size:.78rem;font-weight:750}
 @media(max-width:650px){.promotion-feature{grid-template-columns:1fr;width:calc(100% - 24px);margin-top:14px}.promotion-feature-image{min-height:0;height:clamp(180px,58vw,310px);max-height:none}.promotion-feature-copy{padding:20px}.promotion-feature-copy h2{font-size:1.55rem}.promotion-feature-copy p{font-size:.84rem}}
 .vendor-dashboard .manage-stats{grid-template-columns:repeat(5,minmax(0,1fr))}
+.vendor-dashboard .manage-hero h1{color:var(--atu-gold)}
 .vendor-dashboard .vendor-sales-note{margin-top:-5px;color:var(--atu-muted);font-size:.64rem;font-weight:650;line-height:1.35}
 @media(max-width:1050px){.vendor-dashboard .manage-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:850px){.vendor-dashboard .manage-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}

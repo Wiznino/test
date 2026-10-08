@@ -85,7 +85,11 @@ Route::middleware('guest')->group(function () {
 
         return redirect()->route('login')->with('success', 'Your account is ready. Sign in to place orders and track updates.');
     })->middleware('throttle:5,1');
-    Route::get('/login', fn () => view('login'))->name('login');
+    Route::get('/login', function () {
+        return response()->view('login')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
+    })->name('login');
     Route::post('/login', function (Request $request) {
         $credentials = $request->validate(['identifier' => 'required|string', 'password' => 'required|string']);
         $identifier = trim($credentials['identifier']);
