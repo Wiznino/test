@@ -40,6 +40,9 @@
     <button class="menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="mobile-drawer" aria-expanded="false">
         <span></span><span></span><span></span>
     </button>
+    <a class="back-button" href="{{ route('home') }}" aria-label="Go back to the previous page" title="Go back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5m0 0 7-7m-7 7 7 7" /></svg>
+    </a>
     <a class="brand" href="{{ route('home') }}" aria-label="ATU Eats home"><img class="brand-mark brand-crest" src="{{ asset('images/atu-splash.jpg') }}" alt="Accra Technical University crest"><span class="brand-copy">ATU <b>EATS</b><small>GOOD FOOD. ZERO QUEUE.</small></span></a>
     <nav class="main-nav" aria-label="Main navigation">
         <a class="{{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">Home</a>
@@ -51,7 +54,7 @@
         @endauth
     </nav>
     <div class="header-actions">
-        <a class="bag-link" href="{{ route('cart') }}" aria-label="Your bag">Bag <span>{{ $cartCount }}</span></a>
+        <a class="bag-link" href="{{ route('cart') }}" aria-label="Your cart">Cart <span>{{ $cartCount }}</span></a>
         @auth
             <a class="avatar-link" href="{{ Auth::user()->role === 'admin' ? route('admin.dashboard') : (Auth::user()->role === 'vendor' ? route('vendor.dashboard') : route('dashboard')) }}">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</a>
         @else
@@ -86,7 +89,7 @@
             @else
                 <a class="drawer-primary" href="{{ route('login') }}"><span>Sign in to track orders</span><b aria-hidden="true">›</b></a>
             @endauth
-            <a class="drawer-primary" href="{{ route('cart') }}"><span>Your bag <small>{{ $cartCount }} {{ $cartCount === 1 ? 'item' : 'items' }}</small></span><b aria-hidden="true">›</b></a>
+            <a class="drawer-primary" href="{{ route('cart') }}"><span>Your cart <small>{{ $cartCount }} {{ $cartCount === 1 ? 'item' : 'items' }}</small></span><b aria-hidden="true">›</b></a>
         </nav>
         <div class="drawer-accordions">
             <details class="drawer-accordion"><summary>Pickup information<span aria-hidden="true">⌄</span></summary><p>Choose a pickup time at checkout. Your order page shows progress as the vendor prepares your meals.</p></details>
@@ -141,7 +144,7 @@
     </a>
     <a class="bottom-nav-item {{ request()->routeIs('cart', 'checkout', 'checkout.place') ? 'active' : '' }}" href="{{ route('cart') }}">
         <span class="bottom-nav-icon-wrap"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.2 11.1a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>@if($cartCount > 0)<span class="bottom-nav-badge">{{ $cartCount }}</span>@endif</span>
-        <span>Bag</span>
+        <span>Cart</span>
     </a>
     <a class="bottom-nav-item {{ request()->routeIs('dashboard', 'login', 'register') ? 'active' : '' }}" href="{{ Auth::check() ? route('dashboard') : route('login') }}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
@@ -151,6 +154,59 @@
 @endif
 <footer class="site-footer"><a class="brand brand-light" href="{{ route('home') }}"><img class="brand-mark brand-crest" src="{{ asset('images/atu-splash.jpg') }}" alt="Accra Technical University crest"><span class="brand-copy">ATU <b>EATS</b><small>GOOD FOOD. ZERO QUEUE.</small></span></a><p>Good food for busy campus days.</p>@if(config('app.support.email') || config('app.support.phone'))<div class="site-support"><strong>Need help?</strong>@if(config('app.support.email'))<a href="mailto:{{ config('app.support.email') }}">{{ config('app.support.email') }}</a>@endif @if(config('app.support.phone'))<a href="tel:{{ config('app.support.phone') }}">Call {{ config('app.support.phone') }}</a>@endif</div>@endif<span>© {{ date('Y') }} Accra Technical University</span></footer>
 <script>if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));</script>
+<script>
+(() => {
+    const backHistoryKey = 'atu-internal-back-history-v1';
+    const readBackHistory = () => {
+        try {
+            const savedHistory = JSON.parse(sessionStorage.getItem(backHistoryKey) || '[]');
+            return Array.isArray(savedHistory) ? savedHistory.filter(url => {
+                try {
+                    return new URL(url).origin === window.location.origin;
+                } catch {
+                    return false;
+                }
+            }) : [];
+        } catch {
+            return [];
+        }
+    };
+    const saveBackHistory = history => {
+        try {
+            sessionStorage.setItem(backHistoryKey, JSON.stringify(history.slice(-30)));
+        } catch {}
+    };
+    const backHistory = readBackHistory();
+    while (backHistory.length && backHistory[backHistory.length - 1] === window.location.href) {
+        backHistory.pop();
+    }
+    saveBackHistory(backHistory);
+
+    document.addEventListener('click', event => {
+        const link = event.target.closest('a[href]');
+        if (!link) return;
+
+        if (link.matches('.back-button')) {
+            event.preventDefault();
+            const history = readBackHistory();
+            const previousPage = history.pop();
+            saveBackHistory(history);
+            window.location.assign(previousPage || link.href);
+            return;
+        }
+
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || (link.target && link.target !== '_self')) return;
+
+        try {
+            const destination = new URL(link.href, window.location.href);
+            if (destination.origin !== window.location.origin || destination.href === window.location.href) return;
+            const history = readBackHistory();
+            history.push(window.location.href);
+            saveBackHistory(history);
+        } catch {}
+    });
+})();
+</script>
 <script>
     if (document.documentElement.classList.contains('atu-splash-active')) {
         window.setTimeout(() => {

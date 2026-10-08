@@ -30,7 +30,7 @@
                         <div class="food-bottom">
                             <strong><x-money :amount="$food->price" /></strong>
                             @if($isAvailable)
-                                <form action="{{ route('cart.add', $food) }}" method="POST">@csrf<button class="add-button" aria-label="Add {{ $food->name }} to bag">+</button></form>
+                                <form action="{{ route('cart.add', $food) }}" method="POST">@csrf<button class="add-button" aria-label="Add {{ $food->name }} to cart">+</button></form>
                             @else
                                 <span class="saved-unavailable">Unavailable</span>
                             @endif

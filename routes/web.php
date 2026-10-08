@@ -59,19 +59,22 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/menu', function (Request $request) {
-    $foods = Food::where('available', true)->with('vendor')
+    $promotions = Promotion::currentlyVisible()->latest()->get();
+    $selectedPromotion = $request->filled('promotion')
+        ? Promotion::currentlyVisible()->with('food.vendor')->find($request->integer('promotion'))
+        : null;
+    $foods = $selectedPromotion ? collect() : Food::where('available', true)->with('vendor')
         ->when($request->filled('q'), fn ($query) => $query->where(fn ($q) => $q->where('name', 'like', '%'.$request->q.'%')->orWhere('description', 'like', '%'.$request->q.'%')))
         ->withCount('reviews')
         ->withAvg('reviews as portion_rating_average', 'portion_rating')
         ->withAvg('reviews as value_rating_average', 'value_rating')
         ->withAvg('reviews as accuracy_rating_average', 'accuracy_rating')
         ->get()->filter(fn (Food $food) => ! $food->vendor || $food->vendor->isAcceptingOrders());
-    $promotions = Promotion::currentlyVisible()->latest()->get();
     $favoriteFoodIds = Auth::check() && Auth::user()->role === 'customer'
         ? Auth::user()->favoriteFoods()->pluck('foods.id')->all()
         : [];
 
-    return view('menu', compact('foods', 'promotions', 'favoriteFoodIds'));
+    return view('menu', compact('foods', 'promotions', 'favoriteFoodIds', 'selectedPromotion'));
 })->name('menu');
 
 Route::middleware('guest')->group(function () {
@@ -157,13 +160,13 @@ Route::get('/dashboard', function () {
 })->middleware('auth')->name('dashboard');
 
 Route::post('/cart/add/{food}', function (Food $food) {
-    abort_unless($food->available, 404);
+    abort_unless($food->available && (! $food->vendor || $food->vendor->isAcceptingOrders()), 404);
     $cart = session('cart', []);
     $id = (string) $food->id;
     $cart[$id] = ['name' => $food->name, 'price' => (float) $food->price, 'image' => $food->image_url, 'quantity' => ($cart[$id]['quantity'] ?? 0) + 1];
     session(['cart' => $cart]);
 
-    return back()->with('success', $food->name.' added to your bag.');
+    return back()->with('success', $food->name.' added to your cart.');
 })->name('cart.add');
 
 Route::get('/cart', function () {
@@ -180,7 +183,7 @@ Route::patch('/cart/{id}', function (Request $request, string $id) {
     }
     session(['cart' => $cart]);
 
-    return back()->with('success', 'Bag updated.');
+    return back()->with('success', 'Cart updated.');
 })->name('cart.update');
 
 Route::delete('/cart/{id}', function (string $id) {
@@ -188,7 +191,7 @@ Route::delete('/cart/{id}', function (string $id) {
     unset($cart[$id]);
     session(['cart' => $cart]);
 
-    return back()->with('success', 'Item removed from your bag.');
+    return back()->with('success', 'Item removed from your cart.');
 })->name('cart.remove');
 
 Route::middleware('auth')->group(function () {
@@ -205,7 +208,7 @@ Route::middleware('auth')->group(function () {
         }
         $foods = Food::whereIn('id', array_keys($cart))->where('available', true)->with('vendor')->get();
         if ($foods->count() !== count($cart)) {
-            return redirect()->route('cart')->with('error', 'A meal in your bag is no longer available. Please review your bag.');
+            return redirect()->route('cart')->with('error', 'A meal in your cart is no longer available. Please review your cart.');
         }
         foreach ($foods as $food) {
             if ($food->vendor && ! $food->vendor->isAcceptingOrders()) {
@@ -224,7 +227,7 @@ Route::middleware('auth')->group(function () {
         }
         $foods = Food::whereIn('id', array_keys($cart))->where('available', true)->with('vendor')->get()->keyBy('id');
         if ($foods->count() !== count($cart)) {
-            return redirect()->route('cart')->with('error', 'A meal in your bag is no longer available. Please review your bag.');
+            return redirect()->route('cart')->with('error', 'A meal in your cart is no longer available. Please review your cart.');
         }
         foreach ($foods as $food) {
             if ($food->vendor && ! $food->vendor->isAcceptingOrders()) {
@@ -250,7 +253,7 @@ Route::middleware('auth')->group(function () {
                 }
             });
             if ($vendors->contains(fn (User $vendor): bool => ! $vendor->isAcceptingOrders())) {
-                throw ValidationException::withMessages(['pickup_time' => 'A cafeteria in your basket has paused orders. Please return to your bag.']);
+                throw ValidationException::withMessages(['pickup_time' => 'A cafeteria in your cart has paused orders. Please return to your cart.']);
             }
             if (! $pickupSlotService->isAvailable($foods, $requestedPickup)) {
                 throw ValidationException::withMessages(['pickup_time' => 'That pickup time has just filled up or is no longer available. Please choose another slot.']);
@@ -348,6 +351,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::patch('/vendors/{vendor}/status', [VendorController::class, 'updateStatus'])->name('vendors.status');
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/cancel', [AdminOrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/refund', [AdminOrderController::class, 'recordRefund'])->name('orders.refund');
     Route::get('/promotions', [PromotionController::class, 'index'])->name('promotions.index');
     Route::post('/promotions', [PromotionController::class, 'store'])->name('promotions.store');
     Route::put('/promotions/{promotion}', [PromotionController::class, 'update'])->name('promotions.update');

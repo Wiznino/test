@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePromotionRequest;
+use App\Models\Food;
 use App\Models\Promotion;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -13,9 +14,10 @@ class PromotionController extends Controller
 {
     public function index(): View
     {
-        $promotions = Promotion::query()->latest()->paginate(10);
+        $promotions = Promotion::query()->with('food')->latest()->paginate(10);
+        $foods = Food::query()->orderBy('name')->get();
 
-        return view('admin.promotions.index', compact('promotions'));
+        return view('admin.promotions.index', compact('promotions', 'foods'));
     }
 
     public function store(StorePromotionRequest $request): RedirectResponse

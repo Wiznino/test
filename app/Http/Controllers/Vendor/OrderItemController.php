@@ -24,6 +24,7 @@ class OrderItemController extends Controller
     {
         abort_unless($orderItem->vendor_id === Auth::id(), 404);
         abort_unless($orderItem->order->payment_status === 'paid', 404);
+        abort_if($orderItem->order->status === 'cancelled', 409, 'This order has been cancelled.');
         $data = $request->validate(['status' => 'required|in:received,preparing,ready,completed']);
         $orderItem->update($data);
         $statuses = $orderItem->order->items()->pluck('status');

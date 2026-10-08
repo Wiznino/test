@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Your bag')
+@section('title', 'Your cart')
 
 @section('content')
 @php($total = collect($cart)->sum(fn ($item) => (float) $item['price'] * $item['quantity']))
 <section class="page-shell">
     <div class="page-kicker"><a href="{{ route('menu') }}">Back to menu</a><span>YOUR ORDER</span></div>
     <div class="page-title-row">
-        <div><div class="eyebrow">A GOOD CHOICE</div><h1>Your <em>bag.</em></h1></div>
+        <div><div class="eyebrow">A GOOD CHOICE</div><h1>Your <em>cart.</em></h1></div>
         <span class="count-pill">{{ collect($cart)->sum('quantity') }} {{ Str::plural('item', collect($cart)->sum('quantity')) }}</span>
     </div>
 
@@ -55,7 +55,7 @@
     @else
         <div class="empty-cart">
             <span class="empty-bag">+</span>
-            <h2>Your bag is taking a break.</h2>
+            <h2>Your cart is taking a break.</h2>
             <p>There is plenty of good food waiting for you.</p>
             <a class="button button-primary" href="{{ route('menu') }}">Explore the menu</a>
         </div>

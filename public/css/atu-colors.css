@@ -17,6 +17,68 @@ h3 {
     border-bottom: 3px solid var(--atu-gold);
 }
 
+.back-button {
+    display: grid;
+    flex: 0 0 38px;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #ffbf0080;
+    border-radius: 50%;
+    color: var(--atu-gold);
+    background: #ffffff0d;
+    transition: background-color .18s ease, transform .18s ease;
+}
+
+.back-button svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.back-button:hover,
+.back-button:focus-visible {
+    color: var(--atu-navy);
+    background: var(--atu-gold);
+    transform: translateX(-2px);
+}
+
+.back-button:focus-visible {
+    outline: 3px solid #ffffffb0;
+    outline-offset: 2px;
+}
+
+@media (max-width: 650px) {
+    .back-button {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+@media (max-width: 380px) {
+    .site-header {
+        padding-right: 3.5%;
+        padding-left: 3.5%;
+    }
+
+    .brand-copy small {
+        display: none;
+    }
+
+    .header-actions {
+        gap: 7px;
+    }
+
+    .sign-link {
+        padding: 8px;
+    }
+}
+
 .topline {
     color: var(--atu-navy);
     background: var(--atu-gold);

@@ -66,6 +66,7 @@ class PickupSlotService
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->whereIn('order_items.vendor_id', $vendorIds)
             ->whereIn('orders.pickup_time', $slotValues)
+            ->where('orders.status', '!=', 'cancelled')
             ->where(function ($query): void {
                 $query->where('orders.payment_status', 'paid')
                     ->orWhere(function ($query): void {

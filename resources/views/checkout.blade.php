@@ -5,7 +5,7 @@
 @php($total = collect($cart)->sum(fn ($item) => (float) $item['price'] * $item['quantity']))
 @php($walletCanPay = (float) Auth::user()->wallet_balance >= $total)
 <section class="page-shell">
-    <div class="page-kicker"><a href="{{ route('cart') }}">&larr; Back to your bag</a><span>ALMOST THERE</span></div>
+    <div class="page-kicker"><a href="{{ route('cart') }}">&larr; Back to your cart</a><span>ALMOST THERE</span></div>
     <div class="page-title-row"><div><div class="eyebrow">THE GOOD PART IS CLOSE</div><h1>Plan your <em>pickup.</em></h1></div></div>
     @if($errors->any())<div class="inline-error">{{ $errors->first() }}</div>@endif
     @if(session('error'))<div class="inline-error">{{ session('error') }}</div>@endif

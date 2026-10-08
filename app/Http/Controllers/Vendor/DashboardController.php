@@ -32,12 +32,18 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $vendor = Auth::user();
-        $paidItems = $vendor->vendorOrderItems()->whereHas('order', fn ($query) => $query->where('payment_status', 'paid'));
+        $paidItems = $vendor->vendorOrderItems()->whereHas('order', fn ($query) => $query->where('payment_status', 'paid')->where('status', '!=', 'cancelled'));
+        $today = now()->startOfDay();
+        $tomorrow = $today->copy()->addDay();
         $stats = [
             'meals' => $vendor->foods()->count(),
             'available' => $vendor->foods()->where('available', true)->count(),
             'orders' => (clone $paidItems)->distinct('order_id')->count('order_id'),
             'sales' => (clone $paidItems)->whereIn('status', ['ready', 'completed'])->selectRaw('SUM(price * quantity) as total')->value('total') ?? 0,
+            'today_sales' => (clone $paidItems)
+                ->whereHas('order', fn ($query) => $query->where('paid_at', '>=', $today)->where('paid_at', '<', $tomorrow))
+                ->selectRaw('SUM(price * quantity) as total')
+                ->value('total') ?? 0,
         ];
         $recentItems = $vendor->vendorOrderItems()->with('order.user')->latest()->take(8)->get();
 

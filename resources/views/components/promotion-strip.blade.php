@@ -11,16 +11,17 @@
                 @foreach([false, true] as $isDuplicate)
                     <div class="promotion-ticker-group" @if($isDuplicate) aria-hidden="true" inert @endif>
                         @foreach($promotions as $promotion)
-                            <article class="promotion-ticker-item">
+                            <a class="promotion-ticker-item" href="{{ route('menu', ['promotion' => $promotion->id]) }}#promotion-order" aria-label="View {{ $promotion->title }} and order the promotional meal">
                                 <span class="promotion-ticker-spark" aria-hidden="true">&#9733;</span>
-                                <div class="promotion-copy">
-                                    <h2>{{ $promotion->title }}</h2>
-                                    <p>{{ $promotion->description }}</p>
+                                <span class="promotion-copy">
+                                    <span class="promotion-title">{{ $promotion->title }}</span>
+                                    <span class="promotion-description">{{ $promotion->description }}</span>
                                     @if($promotion->ends_at)
                                         <small class="promotion-expiry">Ends {{ $promotion->ends_at->timezone(config('app.timezone'))->format('M j, g:i A') }}</small>
                                     @endif
-                                </div>
-                            </article>
+                                </span>
+                                <span class="promotion-shop-hint">Shop offer &rarr;</span>
+                            </a>
                         @endforeach
                     </div>
                 @endforeach

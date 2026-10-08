@@ -53,7 +53,9 @@ class PaystackPaymentController extends Controller
         $order->refresh();
 
         return $order->payment_status === 'paid'
-            ? redirect()->route('orders.show', $order)->with('success', 'Payment received. Your cafeteria order is confirmed.')
+            ? redirect()->route('orders.show', $order)->with('success', $order->status === 'cancelled'
+                ? 'Payment was received after cancellation. Your refund is now awaiting processing.'
+                : 'Payment received. Your cafeteria order is confirmed.')
             : redirect()->route('orders.show', $order)->with('error', 'Payment has not been confirmed yet. Refresh this page in a moment.');
     }
 
@@ -100,7 +102,7 @@ class PaystackPaymentController extends Controller
     public function retry(Request $request, Order $order, PaystackService $paystack): RedirectResponse
     {
         abort_unless($order->user_id === $request->user()->id, 404);
-        abort_unless($order->payment_status === 'pending', 409);
+        abort_unless($order->payment_status === 'pending' && $order->status !== 'cancelled', 409);
 
         try {
             $payment = $paystack->initialize($order);
@@ -128,10 +130,13 @@ class PaystackPaymentController extends Controller
                 return false;
             }
 
+            $wasCancelled = $lockedOrder->status === 'cancelled';
             $lockedOrder->update([
                 'payment_status' => 'paid',
                 'paid_at' => now(),
-                'status' => 'received',
+                'status' => $wasCancelled ? 'cancelled' : 'received',
+                'refund_status' => $wasCancelled ? 'pending' : $lockedOrder->refund_status,
+                'refund_amount' => $wasCancelled ? $lockedOrder->total : $lockedOrder->refund_amount,
             ]);
 
             return true;
@@ -139,7 +144,12 @@ class PaystackPaymentController extends Controller
 
         if ($wasPaid) {
             $order->refresh();
-            $order->user->notify(new OrderUpdateNotification($order, 'Payment received. The cafeteria has your order.'));
+            $order->user->notify(new OrderUpdateNotification(
+                $order,
+                $order->status === 'cancelled'
+                    ? 'Payment was received after cancellation. Your refund is awaiting processing.'
+                    : 'Payment received. The cafeteria has your order.',
+            ));
             OrderStatusUpdated::dispatch($order->id);
         }
     }
