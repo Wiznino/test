@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\VendorController;
 use App\Http\Controllers\Customer\FoodFavoriteController;
 use App\Http\Controllers\Customer\FoodReviewController;
+use App\Http\Controllers\Customer\LoyaltyController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\PaystackPaymentController;
 use App\Http\Controllers\Vendor\DashboardController as VendorDashboardController;
@@ -15,11 +16,13 @@ use App\Http\Controllers\Vendor\MealController;
 use App\Http\Controllers\Vendor\OrderItemController as VendorOrderItemController;
 use App\Http\Controllers\WalletController;
 use App\Models\Food;
+use App\Models\FoodVote;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Promotion;
 use App\Models\User;
 use App\Notifications\OrderUpdateNotification;
+use App\Services\LoyaltyPointsService;
 use App\Services\PaystackService;
 use App\Services\PickupSlotService;
 use Carbon\CarbonImmutable;
@@ -51,11 +54,22 @@ Route::get('/', function () {
         ->values();
     $foods = $availableFoods->take(3);
     $promotions = Promotion::currentlyVisible()->latest()->get();
+    $previousVotingWeek = CarbonImmutable::now()->startOfWeek()->subWeek()->toDateString();
+    $mealOfTheWeek = FoodVote::query()
+        ->selectRaw('food_id, COUNT(*) as votes_count')
+        ->whereDate('week_start', $previousVotingWeek)
+        ->groupBy('food_id')
+        ->orderByDesc('votes_count')
+        ->orderBy('food_id')
+        ->with('food.vendor')
+        ->get()
+        ->first(fn (FoodVote $vote): bool => $vote->food?->available
+            && (! $vote->food->vendor || $vote->food->vendor->isAcceptingOrders()))?->food;
     $favoriteFoodIds = Auth::check() && Auth::user()->role === 'customer'
         ? Auth::user()->favoriteFoods()->pluck('foods.id')->all()
         : [];
 
-    return view('home', compact('atuFavorites', 'foods', 'promotions', 'favoriteFoodIds'));
+    return view('home', compact('atuFavorites', 'foods', 'promotions', 'favoriteFoodIds', 'mealOfTheWeek'));
 })->name('home');
 
 Route::get('/menu', function (Request $request) {
@@ -90,7 +104,7 @@ Route::middleware('guest')->group(function () {
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
     })->name('login');
-    Route::post('/login', function (Request $request) {
+    Route::post('/login', function (Request $request, LoyaltyPointsService $loyaltyPoints) {
         $credentials = $request->validate(['identifier' => 'required|string', 'password' => 'required|string']);
         $identifier = trim($credentials['identifier']);
         $loginCredentials = filter_var($identifier, FILTER_VALIDATE_EMAIL)
@@ -110,9 +124,16 @@ Route::middleware('guest')->group(function () {
                 default => route('dashboard'),
             };
 
-            return Auth::user()->role === 'customer'
-                ? redirect()->intended($destination)
-                : redirect()->to($destination);
+            if (Auth::user()->role === 'customer') {
+                $dailyRewardAwarded = $loyaltyPoints->awardDailyLogin(Auth::user());
+                $response = redirect()->intended($destination);
+
+                return $dailyRewardAwarded
+                    ? $response->with('success', 'Daily sign-in reward: +0.1 point.')
+                    : $response;
+            }
+
+            return redirect()->to($destination);
         }
 
         return back()->withErrors(['identifier' => 'Those details don’t match an account.'])->onlyInput('identifier');
@@ -150,7 +171,7 @@ Route::post('/logout', function (Request $request) {
     return redirect()->route('home');
 })->middleware('auth')->name('logout');
 
-Route::get('/dashboard', function () {
+Route::get('/dashboard', function (LoyaltyPointsService $loyaltyPoints) {
     if (Auth::user()->role === 'admin') {
         return redirect()->route('admin.dashboard');
     }
@@ -159,8 +180,9 @@ Route::get('/dashboard', function () {
     }
     $orders = Auth::user()->orders()->latest()->take(3)->get();
     $promotions = Promotion::currentlyVisible()->latest()->get();
+    $loyaltyStreak = $loyaltyPoints->currentStreak(Auth::user());
 
-    return view('dashboard', compact('orders', 'promotions'));
+    return view('dashboard', compact('orders', 'promotions', 'loyaltyStreak'));
 })->middleware('auth')->name('dashboard');
 
 Route::post('/cart/add/{food}', function (Food $food) {
@@ -200,6 +222,9 @@ Route::delete('/cart/{id}', function (string $id) {
 
 Route::middleware('auth')->group(function () {
     Route::middleware('role:customer')->group(function () {
+        Route::get('/loyalty', [LoyaltyController::class, 'index'])->name('loyalty.index');
+        Route::post('/loyalty/votes', [LoyaltyController::class, 'vote'])->name('loyalty.votes.store');
+        Route::post('/loyalty/redeem', [LoyaltyController::class, 'redeem'])->name('loyalty.redeem');
         Route::get('/favorites', [FoodFavoriteController::class, 'index'])->name('favorites.index');
         Route::post('/favorites/{food}', [FoodFavoriteController::class, 'store'])->name('favorites.store');
         Route::delete('/favorites/{food}', [FoodFavoriteController::class, 'destroy'])->name('favorites.destroy');
@@ -224,7 +249,7 @@ Route::middleware('auth')->group(function () {
         return view('checkout', compact('pickupSlots'));
     })->name('checkout');
 
-    Route::post('/checkout', function (Request $request, PaystackService $paystack, PickupSlotService $pickupSlotService) {
+    Route::post('/checkout', function (Request $request, PaystackService $paystack, PickupSlotService $pickupSlotService, LoyaltyPointsService $loyaltyPoints) {
         $cart = session('cart', []);
         if (empty($cart)) {
             return redirect()->route('menu')->with('error', 'Add a meal before checking out.');
@@ -297,6 +322,7 @@ Route::middleware('auth')->group(function () {
             return [$order, $paidByWallet];
         });
         if ($paidByWallet) {
+            $loyaltyPoints->awardForOrder($order);
             session()->forget('cart');
             $order->user->notify(new OrderUpdateNotification($order, 'Your wallet payment was received. The cafeteria has your order.'));
             OrderStatusUpdated::dispatch($order->id);

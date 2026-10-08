@@ -44,6 +44,16 @@ class User extends Authenticatable
         return $this->hasMany(WalletTransaction::class);
     }
 
+    public function loyaltyTransactions(): HasMany
+    {
+        return $this->hasMany(LoyaltyTransaction::class);
+    }
+
+    public function foodVotes(): HasMany
+    {
+        return $this->hasMany(FoodVote::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *
@@ -57,6 +67,7 @@ class User extends Authenticatable
             'is_active' => 'boolean',
             'accepting_orders' => 'boolean',
             'wallet_balance' => 'decimal:2',
+            'loyalty_points' => 'decimal:1',
             'max_orders_per_pickup_slot' => 'integer',
         ];
     }

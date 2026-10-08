@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -9,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Food extends Model
 {
+    use HasFactory;
+
     protected $table = 'foods';
 
     protected $fillable = [
@@ -35,6 +38,11 @@ class Food extends Model
     public function reviews(): HasMany
     {
         return $this->hasMany(FoodReview::class);
+    }
+
+    public function votes(): HasMany
+    {
+        return $this->hasMany(FoodVote::class);
     }
 
     public function favoritedByUsers(): BelongsToMany

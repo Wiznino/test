@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\WalletTransaction;
 use App\Notifications\OrderUpdateNotification;
 use App\Notifications\WalletTopUpNotification;
+use App\Services\LoyaltyPointsService;
 use App\Services\PaystackService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +17,7 @@ use RuntimeException;
 
 class PaystackPaymentController extends Controller
 {
-    public function callback(Request $request, PaystackService $paystack): RedirectResponse
+    public function callback(Request $request, PaystackService $paystack, LoyaltyPointsService $loyaltyPoints): RedirectResponse
     {
         $reference = $request->validate(['reference' => ['required', 'string', 'max:100']])['reference'];
         $walletTransaction = WalletTransaction::where('reference', $reference)->first();
@@ -43,7 +44,7 @@ class PaystackPaymentController extends Controller
 
         try {
             $transaction = $paystack->verify($reference);
-            $this->markSuccessful($order, $transaction);
+            $this->markSuccessful($order, $transaction, $loyaltyPoints);
         } catch (RuntimeException $exception) {
             report($exception);
 
@@ -59,7 +60,7 @@ class PaystackPaymentController extends Controller
             : redirect()->route('orders.show', $order)->with('error', 'Payment has not been confirmed yet. Refresh this page in a moment.');
     }
 
-    public function webhook(Request $request, PaystackService $paystack): JsonResponse
+    public function webhook(Request $request, PaystackService $paystack, LoyaltyPointsService $loyaltyPoints): JsonResponse
     {
         abort_unless($paystack->hasValidWebhookSignature($request->getContent(), $request->header('x-paystack-signature')), 401);
 
@@ -89,7 +90,7 @@ class PaystackPaymentController extends Controller
 
         try {
             $transaction = $paystack->verify($order->payment_reference);
-            $this->markSuccessful($order, $transaction);
+            $this->markSuccessful($order, $transaction, $loyaltyPoints);
         } catch (RuntimeException $exception) {
             report($exception);
 
@@ -114,7 +115,7 @@ class PaystackPaymentController extends Controller
     }
 
     /** @param array<string, mixed> $transaction */
-    private function markSuccessful(Order $order, array $transaction): void
+    private function markSuccessful(Order $order, array $transaction, LoyaltyPointsService $loyaltyPoints): void
     {
         $expectedAmount = (int) round(((float) $order->total) * 100);
         if (($transaction['status'] ?? null) !== 'success'
@@ -144,6 +145,7 @@ class PaystackPaymentController extends Controller
 
         if ($wasPaid) {
             $order->refresh();
+            $loyaltyPoints->awardForOrder($order);
             $order->user->notify(new OrderUpdateNotification(
                 $order,
                 $order->status === 'cancelled'

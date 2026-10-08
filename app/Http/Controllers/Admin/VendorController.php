@@ -68,7 +68,7 @@ class VendorController extends Controller
         return OrderItem::query()
             ->select('vendor_id', DB::raw('COUNT(DISTINCT order_id) as orders_count'), DB::raw('SUM(quantity) as meals_sold'), DB::raw('SUM(price * quantity) as revenue'))
             ->whereIn('vendor_id', $vendorIds)
-            ->whereHas('order', fn ($query) => $query->where('payment_status', 'paid'))
+            ->whereHas('order', fn ($query) => $query->where('payment_status', 'paid')->where('status', '!=', 'cancelled')->where('payment_method', '!=', 'loyalty'))
             ->groupBy('vendor_id')
             ->get()
             ->keyBy('vendor_id');

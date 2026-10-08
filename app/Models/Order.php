@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'total', 'status', 'pickup_time', 'notes', 'payment_status', 'payment_reference', 'payment_method', 'paid_at', 'cancelled_at', 'cancelled_by', 'cancellation_reason', 'refund_status', 'refund_amount', 'refund_reference', 'refunded_at', 'refunded_by'];
+    protected $fillable = ['user_id', 'total', 'status', 'pickup_time', 'notes', 'payment_status', 'payment_reference', 'payment_method', 'paid_at', 'cancelled_at', 'cancelled_by', 'cancellation_reason', 'refund_status', 'refund_amount', 'refund_reference', 'refunded_at', 'refunded_by', 'loyalty_points_awarded', 'loyalty_points_redeemed'];
 
     protected function casts(): array
     {
@@ -19,6 +19,8 @@ class Order extends Model
             'cancelled_at' => 'datetime',
             'refund_amount' => 'decimal:2',
             'refunded_at' => 'datetime',
+            'loyalty_points_awarded' => 'integer',
+            'loyalty_points_redeemed' => 'integer',
         ];
     }
 

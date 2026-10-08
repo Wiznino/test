@@ -32,7 +32,7 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $vendor = Auth::user();
-        $paidItems = $vendor->vendorOrderItems()->whereHas('order', fn ($query) => $query->where('payment_status', 'paid')->where('status', '!=', 'cancelled'));
+        $paidItems = $vendor->vendorOrderItems()->whereHas('order', fn ($query) => $query->where('payment_status', 'paid')->where('status', '!=', 'cancelled')->where('payment_method', '!=', 'loyalty'));
         $today = now()->startOfDay();
         $tomorrow = $today->copy()->addDay();
         $stats = [

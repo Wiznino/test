@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\WalletTransaction;
 use App\Notifications\OrderUpdateNotification;
+use App\Services\LoyaltyPointsService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,7 +48,7 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
-    public function cancel(Request $request, Order $order): RedirectResponse
+    public function cancel(Request $request, Order $order, LoyaltyPointsService $loyaltyPoints): RedirectResponse
     {
         $data = $request->validate([
             'cancellation_reason' => ['nullable', 'string', 'max:500'],
@@ -68,8 +69,10 @@ class OrderController extends Controller
                 'cancelled_at' => now(),
                 'cancelled_by' => $request->user()->id,
                 'cancellation_reason' => $data['cancellation_reason'] ?? null,
-                'refund_status' => $isPaid ? ($isWalletPayment ? 'refunded' : 'pending') : 'none',
-                'refund_amount' => $isPaid ? $lockedOrder->total : null,
+                'refund_status' => $isPaid && $lockedOrder->payment_method === 'paystack'
+                    ? 'pending'
+                    : ($isPaid && $isWalletPayment ? 'refunded' : 'none'),
+                'refund_amount' => $isPaid && $lockedOrder->payment_method !== 'loyalty' ? $lockedOrder->total : null,
                 'refund_reference' => null,
                 'refunded_at' => $isPaid && $isWalletPayment ? now() : null,
                 'refunded_by' => $isPaid && $isWalletPayment ? $request->user()->id : null,
@@ -94,13 +97,16 @@ class OrderController extends Controller
         });
 
         $order->refresh();
+        $loyaltyPoints->reverseForOrder($order);
         $order->user->notify(new OrderUpdateNotification(
             $order,
-            $order->refund_status === 'pending'
+            $order->loyalty_points_redeemed > 0
+                ? 'Your reward order was cancelled and the points were returned to your account.'
+                : ($order->refund_status === 'pending'
                 ? 'Your order was cancelled. Your Paystack refund is waiting to be processed.'
                 : ($order->refund_status === 'refunded'
                     ? 'Your order was cancelled and the refund was returned to your ATU Eats wallet.'
-                    : 'Your order was cancelled before payment was completed.'),
+                    : 'Your order was cancelled before payment was completed.')),
         ));
         OrderStatusUpdated::dispatch($order->id);
 

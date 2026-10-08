@@ -135,3 +135,53 @@
 .status-refunded{color:#176743;background:#e5f5eb}
 .form-error{display:block;color:#a12a20;font-size:.75rem;font-weight:700}
 @media(max-width:700px){.admin-resolution-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.loyalty-shell{display:grid;gap:18px}
+.loyalty-hero{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.loyalty-hero>div:first-child{max-width:680px}
+.loyalty-hero h1{color:var(--atu-gold)}
+.loyalty-hero p{max-width:540px;margin:0;color:#e3edf8;line-height:1.6}
+.loyalty-balance{display:grid;justify-items:center;min-width:145px;padding:18px 24px;border:1px solid #f4b51b75;border-radius:16px;background:#f4b51b16;color:#fff}
+.loyalty-balance small{color:var(--atu-gold);font-size:.65rem;font-weight:900;letter-spacing:.12em}
+.loyalty-balance strong{margin:5px 0;color:var(--atu-gold);font:900 2.4rem Manrope,sans-serif}
+.loyalty-balance span{font-size:.75rem}
+.loyalty-streak-card{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:20px 24px;border:1px solid #f1dda5;border-left:5px solid var(--atu-gold);border-radius:16px;background:linear-gradient(120deg,#fff9e9,#fff)}
+.loyalty-streak-card h2{margin:6px 0;color:#8a6200;font:800 1.2rem Manrope,sans-serif}
+.loyalty-streak-card p,.loyalty-section .manage-title p{margin:4px 0 0;color:var(--atu-muted);font-size:.82rem}
+.streak-milestones{display:flex;gap:8px}
+.streak-milestones span{display:grid;gap:4px;padding:10px 13px;border:1px solid var(--atu-line);border-radius:11px;background:#fff;color:var(--atu-muted);font-size:.7rem;font-weight:800}
+.streak-milestones b{color:var(--atu-navy)}
+.streak-milestones .milestone-earned{border-color:#f1dda5;background:#fff2c8;color:#805800}
+.loyalty-section .manage-title{align-items:flex-start}
+.loyalty-section .manage-title h2{margin-bottom:3px;color:#8a6200}
+.loyalty-food-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.loyalty-food-card{display:grid;align-content:start;gap:10px;overflow:hidden;padding-bottom:13px;border:1px solid var(--atu-line);border-radius:14px;background:#fff}
+.loyalty-food-card>img{width:100%;height:145px;object-fit:cover;background:#eef3f8}
+.loyalty-food-card>div,.loyalty-food-card>form{margin:0 13px}
+.loyalty-food-card h3{margin:0 0 4px;color:#8a6200;font:800 .95rem Manrope,sans-serif}
+.loyalty-food-card small{color:var(--atu-muted);font-size:.7rem}.loyalty-meal-cost{display:block;margin-top:5px;color:#8a6200;font-size:.76rem;font-weight:850}
+.loyalty-food-card form{display:grid;gap:9px}
+.loyalty-food-card form label{display:grid;gap:5px;color:var(--atu-navy);font-size:.72rem;font-weight:750}
+.loyalty-food-card select{width:100%;padding:9px;border:1px solid #d6e0ea;border-radius:9px;background:#fff;color:var(--atu-ink);font:500 .78rem "DM Sans",sans-serif}
+.loyalty-food-card button{width:100%;font-size:.72rem}
+.loyalty-food-card button:disabled{cursor:not-allowed;opacity:.52}
+.loyalty-points-needed{padding:11px 14px;border-radius:10px;background:#fff8e3;color:#805800;font-size:.8rem;font-weight:750}
+.loyalty-transaction{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:13px 0;border-bottom:1px solid var(--atu-line)}
+.loyalty-transaction:last-of-type{border-bottom:0}
+.loyalty-transaction strong,.loyalty-transaction small{display:block}
+.loyalty-transaction strong{color:#8a6200;font-size:.82rem}
+.loyalty-transaction small{margin-top:4px;color:var(--atu-muted);font-size:.7rem}
+.points-positive{color:#217447}.points-negative{color:#a83829}
+.customer-loyalty-card{display:flex;align-items:center;gap:13px;margin:16px 0 30px;padding:15px 18px;border:1px solid #f1dda5;border-left:5px solid var(--atu-gold);border-radius:14px;background:linear-gradient(110deg,#fff9e9,#fff);text-decoration:none}
+.loyalty-card-mark{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:12px;background:var(--atu-gold);color:var(--atu-navy);font-size:1.2rem}
+.customer-loyalty-card>span:nth-child(2){display:grid;gap:3px;flex:1}
+.customer-loyalty-card small{color:var(--atu-muted);font-size:.67rem;font-weight:700}
+.customer-loyalty-card strong{color:var(--atu-navy);font-size:.87rem}
+.customer-loyalty-card>b{color:var(--atu-navy);font-size:1.2rem}
+.meal-of-week-banner{display:grid;grid-template-columns:minmax(180px,.75fr) 1.25fr;align-items:center;gap:22px;width:min(1060px,calc(100% - 40px));margin:18px auto 0;overflow:hidden;border:1px solid #f1dda5;border-radius:17px;background:#fff9e9}
+.meal-of-week-banner>img{width:100%;height:210px;object-fit:cover}
+.meal-of-week-banner>div{padding:18px 24px 18px 0}
+.meal-of-week-banner h2{margin:8px 0;color:var(--atu-navy);font:850 1.45rem Manrope,sans-serif}
+.meal-of-week-banner p{margin:0 0 13px;color:var(--atu-muted);font-size:.82rem}
+.meal-of-week-banner .manage-button span{margin-left:9px}
+@media(max-width:850px){.loyalty-food-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.loyalty-hero,.loyalty-streak-card{align-items:flex-start;flex-direction:column}.loyalty-balance{grid-template-columns:auto auto auto;align-items:center;justify-items:start;gap:8px;width:100%;min-width:0;padding:11px 14px}.loyalty-balance strong{margin:0}.streak-milestones{width:100%}.loyalty-food-grid{grid-template-columns:1fr}.loyalty-food-card>img{height:190px}.loyalty-section .manage-title{flex-direction:column}.meal-of-week-banner{grid-template-columns:1fr;width:calc(100% - 24px)}.meal-of-week-banner>img{height:190px}.meal-of-week-banner>div{padding:0 17px 17px}.customer-loyalty-card{margin:13px 0 24px;padding:13px}}

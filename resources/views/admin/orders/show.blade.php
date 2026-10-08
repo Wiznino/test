@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 @section('title', 'Order #'.str_pad($order->id, 5, '0', STR_PAD_LEFT))
 @section('content')
 <section class="manage-shell">
