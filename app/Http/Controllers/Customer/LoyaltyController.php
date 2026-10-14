@@ -34,11 +34,24 @@ class LoyaltyController extends Controller
         $currentVote = $user->foodVotes()->whereDate('week_start', $weekStart)->first();
         $transactions = $user->loyaltyTransactions()->latest()->paginate(10);
         $streak = $loyaltyPoints->currentStreak($user);
+        $dailyLoginRewardClaimed = $loyaltyPoints->hasClaimedDailyLogin($user);
         $pickupSlotsByFood = $foods->mapWithKeys(fn (Food $food): array => [
             $food->id => $pickupSlotService->availableSlots(collect([$food])),
         ]);
 
-        return view('loyalty.index', compact('foods', 'currentVote', 'transactions', 'streak', 'pickupSlotsByFood'));
+        return view('loyalty.index', compact('foods', 'currentVote', 'transactions', 'streak', 'pickupSlotsByFood', 'dailyLoginRewardClaimed'));
+    }
+
+    public function claimDailyLogin(Request $request, LoyaltyPointsService $loyaltyPoints): RedirectResponse
+    {
+        $claimed = $loyaltyPoints->claimDailyLogin($request->user());
+
+        return back()->with(
+            'success',
+            $claimed
+                ? 'Daily sign-in reward claimed: +0.1 point.'
+                : 'You have already claimed today’s sign-in reward.',
+        );
     }
 
     public function vote(Request $request): RedirectResponse

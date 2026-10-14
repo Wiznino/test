@@ -6,6 +6,18 @@
         <div><span class="manage-kicker">ATU EATS REWARDS</span><h1>Your points bring a meal closer.</h1><p>Earn one point for every meal in a paid order. Five points equal GH₵1, and you can use your points to pay for an available meal.</p></div>
         <div class="loyalty-balance"><small>POINT BALANCE</small><strong>{{ number_format((float) Auth::user()->loyalty_points, 1) }}</strong><span>points</span></div>
     </div>
+    <div class="daily-login-reward">
+        <div>
+            <strong>{{ $dailyLoginRewardClaimed ? 'Sign-in point claimed today' : 'Claim your daily sign-in point' }}</strong>
+            <small>{{ $dailyLoginRewardClaimed ? 'Come back tomorrow to claim another point.' : 'Claim +0.1 loyalty point for signing in today.' }}</small>
+        </div>
+        @unless($dailyLoginRewardClaimed)
+            <form method="POST" action="{{ route('loyalty.daily-login.claim') }}">
+                @csrf
+                <button class="manage-button" type="submit">Claim +0.1 point</button>
+            </form>
+        @endunless
+    </div>
     @if($errors->any())<div class="inline-error">{{ $errors->first() }}</div>@endif
     <div class="loyalty-streak-card"><div><span class="manage-kicker">CAMPUS MEAL STREAK</span><h2>{{ $streak }} {{ Str::plural('day', $streak) }} in a row</h2><p>Place a paid order on consecutive days to keep your streak going.</p></div><div class="streak-milestones"><span class="{{ $streak >= 3 ? 'milestone-earned' : '' }}">3 days <b>+2 points</b></span><span class="{{ $streak >= 7 ? 'milestone-earned' : '' }}">7 days <b>+5 points</b></span></div></div>
 

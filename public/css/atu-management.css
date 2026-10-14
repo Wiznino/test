@@ -136,6 +136,12 @@
 .form-error{display:block;color:#a12a20;font-size:.75rem;font-weight:700}
 @media(max-width:700px){.admin-resolution-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .loyalty-shell{display:grid;gap:18px}
+.daily-login-reward{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border:1px solid #f1dda5;border-left:5px solid var(--atu-gold);border-radius:14px;background:linear-gradient(110deg,#fff9e9,#fff)}
+.daily-login-reward>div{display:grid;gap:4px}
+.daily-login-reward strong{color:var(--atu-navy);font-size:.88rem}
+.daily-login-reward small{color:var(--atu-muted);font-size:.75rem}
+.daily-login-reward form{margin:0}
+.daily-login-reward button{white-space:nowrap}
 .loyalty-hero{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .loyalty-hero>div:first-child{max-width:680px}
 .loyalty-hero h1{color:var(--atu-gold)}
@@ -184,4 +190,4 @@
 .meal-of-week-banner p{margin:0 0 13px;color:var(--atu-muted);font-size:.82rem}
 .meal-of-week-banner .manage-button span{margin-left:9px}
 @media(max-width:850px){.loyalty-food-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){.loyalty-hero,.loyalty-streak-card{align-items:flex-start;flex-direction:column}.loyalty-balance{grid-template-columns:auto auto auto;align-items:center;justify-items:start;gap:8px;width:100%;min-width:0;padding:11px 14px}.loyalty-balance strong{margin:0}.streak-milestones{width:100%}.loyalty-food-grid{grid-template-columns:1fr}.loyalty-food-card>img{height:190px}.loyalty-section .manage-title{flex-direction:column}.meal-of-week-banner{grid-template-columns:1fr;width:calc(100% - 24px)}.meal-of-week-banner>img{height:190px}.meal-of-week-banner>div{padding:0 17px 17px}.customer-loyalty-card{margin:13px 0 24px;padding:13px}}
+@media(max-width:600px){.loyalty-hero,.loyalty-streak-card{align-items:flex-start;flex-direction:column}.loyalty-balance{grid-template-columns:auto auto auto;align-items:center;justify-items:start;gap:8px;width:100%;min-width:0;padding:11px 14px}.loyalty-balance strong{margin:0}.streak-milestones{width:100%}.loyalty-food-grid{grid-template-columns:1fr}.loyalty-food-card>img{height:190px}.loyalty-section .manage-title{flex-direction:column}.meal-of-week-banner{grid-template-columns:1fr;width:calc(100% - 24px)}.meal-of-week-banner>img{height:190px}.meal-of-week-banner>div{padding:0 17px 17px}.customer-loyalty-card{margin:13px 0 24px;padding:13px}.daily-login-reward{align-items:flex-start;flex-direction:column}.daily-login-reward form,.daily-login-reward button{width:100%}}

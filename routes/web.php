@@ -104,7 +104,7 @@ Route::middleware('guest')->group(function () {
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache');
     })->name('login');
-    Route::post('/login', function (Request $request, LoyaltyPointsService $loyaltyPoints) {
+    Route::post('/login', function (Request $request) {
         $credentials = $request->validate(['identifier' => 'required|string', 'password' => 'required|string']);
         $identifier = trim($credentials['identifier']);
         $loginCredentials = filter_var($identifier, FILTER_VALIDATE_EMAIL)
@@ -125,12 +125,7 @@ Route::middleware('guest')->group(function () {
             };
 
             if (Auth::user()->role === 'customer') {
-                $dailyRewardAwarded = $loyaltyPoints->awardDailyLogin(Auth::user());
-                $response = redirect()->intended($destination);
-
-                return $dailyRewardAwarded
-                    ? $response->with('success', 'Daily sign-in reward: +0.1 point.')
-                    : $response;
+                return redirect()->intended($destination);
             }
 
             return redirect()->to($destination);
@@ -181,8 +176,9 @@ Route::get('/dashboard', function (LoyaltyPointsService $loyaltyPoints) {
     $orders = Auth::user()->orders()->latest()->take(3)->get();
     $promotions = Promotion::currentlyVisible()->latest()->get();
     $loyaltyStreak = $loyaltyPoints->currentStreak(Auth::user());
+    $dailyLoginRewardClaimed = $loyaltyPoints->hasClaimedDailyLogin(Auth::user());
 
-    return view('dashboard', compact('orders', 'promotions', 'loyaltyStreak'));
+    return view('dashboard', compact('orders', 'promotions', 'loyaltyStreak', 'dailyLoginRewardClaimed'));
 })->middleware('auth')->name('dashboard');
 
 Route::post('/cart/add/{food}', function (Food $food) {
@@ -223,6 +219,7 @@ Route::delete('/cart/{id}', function (string $id) {
 Route::middleware('auth')->group(function () {
     Route::middleware('role:customer')->group(function () {
         Route::get('/loyalty', [LoyaltyController::class, 'index'])->name('loyalty.index');
+        Route::post('/loyalty/daily-login', [LoyaltyController::class, 'claimDailyLogin'])->name('loyalty.daily-login.claim');
         Route::post('/loyalty/votes', [LoyaltyController::class, 'vote'])->name('loyalty.votes.store');
         Route::post('/loyalty/redeem', [LoyaltyController::class, 'redeem'])->name('loyalty.redeem');
         Route::get('/favorites', [FoodFavoriteController::class, 'index'])->name('favorites.index');

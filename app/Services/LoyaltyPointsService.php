@@ -12,7 +12,14 @@ class LoyaltyPointsService
 {
     public const int POINTS_PER_CEDI = 5;
 
-    public function awardDailyLogin(User $user): bool
+    public function hasClaimedDailyLogin(User $user): bool
+    {
+        $reference = 'daily-login-'.$user->id.'-'.now()->toDateString();
+
+        return $user->loyaltyTransactions()->where('reference', $reference)->exists();
+    }
+
+    public function claimDailyLogin(User $user): bool
     {
         return DB::transaction(function () use ($user): bool {
             $customer = User::query()->lockForUpdate()->findOrFail($user->id);
